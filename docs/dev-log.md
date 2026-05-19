@@ -393,3 +393,33 @@ A beautiful visual dashboard showing:
 ### APIs Working
 - GET /api/user/profile ✅
 - PUT /api/user/profile ✅
+
+## Day 4 — May 20, 2026
+**Focus:** Frontend Auth + Dashboard
+
+### Features Completed
+- Setup React Router v6
+- Created AuthContext with login/logout functions
+- Created ProtectedRoute component
+- Built Login page UI
+- Built Register page UI
+- Built basic Dashboard UI
+- Connected frontend to backend APIs
+- Token stored in localStorage
+- Protected route working
+
+### What I Learned
+- How React Context API works
+- How to store JWT token in localStorage
+- How protected routes work in React
+- How axios sends POST requests
+- How useNavigate works for redirecting
+- How to handle loading and error states in forms
+
+### Working
+- / → redirects to /login ✅
+- /login → login works ✅
+- /register → register works ✅
+- /dashboard → shows user name ✅
+- Logout → redirects to /login ✅
+- /dashboard without token → redirects to /login ✅
