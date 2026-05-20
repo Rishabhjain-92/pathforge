@@ -423,3 +423,23 @@ A beautiful visual dashboard showing:
 - /dashboard → shows user name ✅
 - Logout → redirects to /login ✅
 - /dashboard without token → redirects to /login ✅
+
+## Day 4 — May 20, 2026
+**Focus:** Frontend Layout + Sidebar
+
+### Features Completed
+- Built Sidebar with lucide-react icons
+- Built Topbar with search + user avatar
+- Built Layout wrapper component
+- Created ProtectedLayout combining auth + layout
+- Updated App.jsx with all 8 routes
+- Created placeholder pages for all routes
+- Updated Dashboard with 4 stat cards
+- Navigation highlights active page in orange
+
+### What I Learned
+- How NavLink works vs Link in React Router
+- How to use lucide-react icons
+- How Layout component wraps children
+- How fixed positioning works with sidebar + topbar
+- How to create reusable layout structure

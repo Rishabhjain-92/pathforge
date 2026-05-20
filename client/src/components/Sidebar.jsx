@@ -11,6 +11,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/logo.svg";
 
 const navItems = [
   { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -36,13 +37,10 @@ const Sidebar = () => {
     <div className="fixed left-0 top-0 h-screen w-56 bg-gray-900 border-r border-gray-800 flex flex-col">
 
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-800">
-        <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center font-bold text-white text-sm">
-          P
-        </div>
+            <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-800">
+        <img src={logo} alt="PathForge" className="w-8 h-8" />
         <span className="text-white font-bold text-lg">PathForge</span>
       </div>
-
       {/* Nav Items */}
       <nav className="flex-1 px-3 py-4 space-y-1">
         {navItems.map((item) => (

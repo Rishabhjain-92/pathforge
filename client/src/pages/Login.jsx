@@ -2,11 +2,14 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-
+import { motion } from "framer-motion";
+import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import logo from "../assets/logo.svg";
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -18,7 +21,6 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
     try {
       const res = await axios.post(
         "http://localhost:5000/api/auth/login",
@@ -34,64 +36,159 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <div className="bg-gray-900 p-8 rounded-2xl w-full max-w-md shadow-xl">
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4 relative overflow-hidden">
 
-        <h1 className="text-3xl font-bold text-white mb-2">
-          Welcome to <span className="text-orange-500">PathForge</span>
-        </h1>
-        <p className="text-gray-400 mb-6">Login to forge your path</p>
+      {/* Animated background blobs */}
+      <div className="absolute -top-25 -left-25 w-100 h-100 bg-orange-500/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute -bottom-25 -right-25 w-100 h-100 bg-orange-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
 
-        {error && (
-          <div className="bg-red-500/10 border border-red-500 text-red-400 px-4 py-3 rounded-lg mb-4">
-            {error}
-          </div>
-        )}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md relative z-10"
+      >
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-gray-400 text-sm mb-1 block">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              required
-              className="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-orange-500"
+        {/* Logo */}
+       
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <img
+              src={logo}
+              alt="PathForge Logo"
+              className="w-12 h-12 drop-shadow-lg"
             />
+            <span className="text-white font-bold text-2xl">PathForge</span>
           </div>
 
-          <div>
-            <label className="text-gray-400 text-sm mb-1 block">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              required
-              className="w-full bg-gray-800 text-white px-4 py-3 rounded-lg border border-gray-700 focus:outline-none focus:border-orange-500"
-            />
-          </div>
+        {/* Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl"
+        >
+          <h1 className="text-2xl font-bold text-white mb-1">Welcome back</h1>
+          <p className="text-gray-400 text-sm mb-6">
+            Sign in to continue your journey
+          </p>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition duration-200"
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
+          {/* Error */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-4 text-sm"
+            >
+              {error}
+            </motion.div>
+          )}
 
-        <p className="text-gray-400 text-sm text-center mt-6">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-orange-500 hover:underline">
-            Register
-          </Link>
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Email */}
+            <div>
+              <label className="text-gray-400 text-sm mb-1.5 block">
+                Email
+              </label>
+              <div className="relative">
+                <Mail
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+                />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full bg-gray-800 text-white pl-10 pr-4 py-3 rounded-xl border border-gray-700 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/30 transition text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-gray-400 text-sm mb-1.5 block">
+                Password
+              </label>
+              <div className="relative">
+                <Lock
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+                />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  required
+                  className="w-full bg-gray-800 text-white pl-10 pr-10 py-3 rounded-xl border border-gray-700 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/30 transition text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Remember + Forgot */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="accent-orange-500 w-4 h-4"
+                />
+                Remember me
+              </label>
+              <span className="text-orange-500 text-sm cursor-pointer hover:text-orange-400 transition">
+                Forgot password?
+              </span>
+            </div>
+
+            {/* Submit Button */}
+            <motion.button
+              type="submit"
+              disabled={loading}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 mt-2"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </motion.button>
+
+          </form>
+
+          {/* Register Link */}
+          <p className="text-gray-400 text-sm text-center mt-6">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="text-orange-500 hover:text-orange-400 font-medium transition"
+            >
+              Create one
+            </Link>
+          </p>
+
+        </motion.div>
+
+        {/* Footer */}
+        <p className="text-gray-600 text-xs text-center mt-6">
+          Terms • Privacy • Contact
         </p>
 
-      </div>
+      </motion.div>
     </div>
   );
 };
