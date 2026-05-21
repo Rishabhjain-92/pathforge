@@ -3,16 +3,18 @@ import Topbar from "./Topbar";
 
 const Layout = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div className="min-h-screen bg-gray-950 text-white">
       <Sidebar />
       <Topbar />
       <main
-        style={{ marginLeft: "224px", marginTop: "56px" }}
-        className="flex-1 p-4 md:p-6 lg:p-8 min-h-screen"
+        style={{
+          marginLeft: "240px",
+          marginTop: "56px",
+          padding: "20px",
+          minHeight: "calc(100vh - 56px)",
+        }}
       >
-        <div className="max-w-7xl mx-auto">
-          {children}
-        </div>
+        {children}
       </main>
     </div>
   );

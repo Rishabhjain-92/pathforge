@@ -3,43 +3,26 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
 import {
-  TrendingUp,
-  Target,
-  Building,
-  Calendar,
-  CheckCircle,
-  Zap,
-  ArrowRight,
-  BookOpen,
-  Star,
-  Sparkles,
-  Clock,
+  TrendingUp, Target, Building, Calendar,
+  CheckCircle, Zap, ArrowRight,
+  BookOpen, Star, Sparkles, Clock,
 } from "lucide-react";
 
 const Dashboard = () => {
   const { user } = useAuth();
-
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-
         const res = await axios.get(
           "http://localhost:5000/api/user/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
         setProfile(res.data.user);
       } catch (error) {
         console.error("Failed to fetch profile");
@@ -47,481 +30,265 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-
     fetchProfile();
   }, []);
 
   const getDaysOnPlatform = () => {
     if (!profile?.createdAt) return 1;
-
     const created = new Date(profile.createdAt);
     const now = new Date();
-
-    return Math.max(
-      1,
-      Math.floor((now - created) / (1000 * 60 * 60 * 24))
-    );
+    return Math.max(1, Math.floor((now - created) / (1000 * 60 * 60 * 24)));
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[70vh]">
+      <div className="flex items-center justify-center h-64">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{
-            duration: 1,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-          className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full"
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-7 h-7 border-2 border-orange-500/30 border-t-orange-500 rounded-full"
         />
       </div>
     );
   }
 
+  const statCards = [
+    { label: "Readiness Score", value: `${profile?.readinessScore || 0}%`, icon: TrendingUp, color: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20" },
+    { label: "Target Role", value: profile?.targetRole || "Not set", icon: Target, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+    { label: "Target Company", value: profile?.targetCompany || "Not set", icon: Building, color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20" },
+    { label: "Days on Platform", value: getDaysOnPlatform(), icon: Calendar, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
+  ];
+
   return (
-    <div className="w-full space-y-4 md:space-y-5">
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-{/* Header */}
-<motion.div
-  initial={{ opacity: 0, y: -10 }}
-  animate={{ opacity: 1, y: 0 }}
-  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
->
-  <div>
-    <p className="text-gray-400 text-sm">
-      {new Date().toLocaleDateString("en-IN", {
-        weekday: "long", day: "numeric",
-        month: "long", year: "numeric"
-      })}
-    </p>
-    <h1 className="text-lg font-bold text-white mt-0.5">
-      Welcome back,{" "}
-      <span className="text-orange-500">{user?.name}</span> 👋
-    </h1>
-  </div>
-  <div className="text-xs bg-orange-500/10 border border-orange-500/20 text-orange-400 px-3 py-1.5 rounded-lg">
-    {profile?.targetRole || "Set your target role"}
-  </div>
-</motion.div>
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <p style={{ color: "#9CA3AF", fontSize: "12px" }}>
+            {new Date().toLocaleDateString("en-IN", {
+              weekday: "long", day: "numeric",
+              month: "long", year: "numeric"
+            })}
+          </p>
+          <h1 style={{ color: "white", fontSize: "18px", fontWeight: "700", marginTop: "2px" }}>
+            Welcome back, <span style={{ color: "#F97316" }}>{user?.name}</span> 👋
+          </h1>
+        </div>
+        <div style={{ fontSize: "12px", background: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.2)", color: "#FB923C", padding: "6px 12px", borderRadius: "8px" }}>
+          {profile?.targetRole || "Set target role"}
+        </div>
+      </div>
 
-      {/* STAT CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
-
-        {[
-          {
-            label: "Readiness Score",
-            value: `${profile?.readinessScore || 0}%`,
-            icon: TrendingUp,
-            color: "text-orange-500",
-            bg: "bg-orange-500/10",
-            border: "border-orange-500/20",
-          },
-
-          {
-            label: "Target Role",
-            value: profile?.targetRole || "Not set",
-            icon: Target,
-            color: "text-blue-400",
-            bg: "bg-blue-500/10",
-            border: "border-blue-500/20",
-          },
-
-          {
-            label: "Target Company",
-            value: profile?.targetCompany || "Not set",
-            icon: Building,
-            color: "text-green-400",
-            bg: "bg-green-500/10",
-            border: "border-green-500/20",
-          },
-
-          {
-            label: "Days on Platform",
-            value: getDaysOnPlatform(),
-            icon: Calendar,
-            color: "text-purple-400",
-            bg: "bg-purple-500/10",
-            border: "border-purple-500/20",
-          },
-        ].map((card, i) => (
+      {/* Stat Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+        {statCards.map((card, i) => (
           <motion.div
             key={card.label}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08 }}
-            whileHover={{ y: -2 }}
-            className={`bg-[#111827] border ${card.border} rounded-2xl p-5`}
+            whileHover={{ scale: 1.02 }}
+            className={`bg-gray-900 border ${card.border} rounded-xl`}
+            style={{ padding: "16px" }}
           >
-
-            <div className="flex items-center justify-between mb-4">
-
-              <p className="text-gray-400 text-sm">
-                {card.label}
-              </p>
-
-              <div className={`${card.bg} p-2 rounded-lg`}>
-                <card.icon
-                  size={16}
-                  className={card.color}
-                />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+              <p style={{ color: "#9CA3AF", fontSize: "12px" }}>{card.label}</p>
+              <div className={`${card.bg} p-1.5 rounded-lg`}>
+                <card.icon size={14} className={card.color} />
               </div>
             </div>
-
-            <h2
-              className={`text-2xl font-bold ${card.color} truncate`}
-            >
+            <p className={card.color} style={{ fontSize: "16px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {card.value}
-            </h2>
-
+            </p>
           </motion.div>
         ))}
       </div>
 
-      {/* MIDDLE SECTION */}
-      <div className="grid grid-cols-12 gap-3 md:gap-5">
+      {/* Middle Row */}
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "12px" }}>
 
-        {/* ROADMAP */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="col-span-12 xl:col-span-8 bg-[#111827] border border-[#1F2937] rounded-2xl p-6"
-        >
-
-          <div className="flex items-center justify-between mb-5">
-
-            <div>
-              <h2 className="text-white text-xl font-semibold">
-                Roadmap Progress
-              </h2>
-
-              <p className="text-gray-500 text-sm mt-1">
-                Track your Dream Role journey
-              </p>
-            </div>
-
-            <span className="text-gray-500 text-sm">
-              {profile?.roadmapProgress || 0}% completed
-            </span>
-
-          </div>
-
-          {/* Progress Bar */}
-          <div className="mb-6">
-
-            <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-400">
-                Overall Completion
-              </span>
-
-              <span className="text-orange-500 font-medium">
-                {profile?.roadmapProgress || 0}%
-              </span>
-            </div>
-
-            <div className="w-full h-3 bg-gray-800 rounded-full overflow-hidden">
-
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{
-                  width: `${profile?.roadmapProgress || 0}%`,
-                }}
-                transition={{
-                  duration: 1,
-                  delay: 0.4,
-                }}
-                className="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full"
-              />
-
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-
-            {[
-              {
-                label: "Completed",
-                value: "0",
-                color: "text-green-400",
-                bg: "bg-green-500/10",
-              },
-
-              {
-                label: "In Progress",
-                value: "0",
-                color: "text-orange-400",
-                bg: "bg-orange-500/10",
-              },
-
-              {
-                label: "Upcoming",
-                value: "0",
-                color: "text-gray-400",
-                bg: "bg-gray-800",
-              },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className={`${item.bg} rounded-2xl p-5 text-center`}
-              >
-                <h3 className={`text-3xl font-bold ${item.color}`}>
-                  {item.value}
-                </h3>
-
-                <p className="text-gray-500 text-sm mt-1">
-                  {item.label}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* CTA */}
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => navigate("/roadmap")}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-2xl font-medium flex items-center justify-center gap-2 transition"
-          >
-            <Zap size={16} />
-
-            Generate Your Roadmap with AI
-
-            <ArrowRight size={16} />
-          </motion.button>
-
-        </motion.div>
-
-        {/* AI INSIGHTS */}
+        {/* Roadmap Progress */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="col-span-12 xl:col-span-4 bg-[#111827] border border-orange-500/20 rounded-2xl p-6"
+          className="bg-gray-900 border border-gray-800 rounded-xl"
+          style={{ padding: "20px" }}
         >
-
-          <div className="flex items-center gap-2 mb-5">
-
-            <Sparkles
-              size={18}
-              className="text-orange-500"
-            />
-
-            <h2 className="text-white text-lg font-semibold">
-              AI Insights
-            </h2>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+            <div>
+              <h2 style={{ color: "white", fontSize: "15px", fontWeight: "600" }}>Roadmap Progress</h2>
+              <p style={{ color: "#6B7280", fontSize: "12px", marginTop: "2px" }}>Track your Dream Role journey</p>
+            </div>
+            <span style={{ color: "#6B7280", fontSize: "12px" }}>{profile?.roadmapProgress || 0}% completed</span>
           </div>
 
-          <div className="space-y-3">
-
-            {[
-              {
-                text: "Complete your profile to unlock AI-powered recommendations.",
-              },
-
-              {
-                text: "Upload your resume this week to receive ATS analysis.",
-              },
-
-              {
-                text: "Your current profile matches 0% of your target role requirements.",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="bg-gray-800 rounded-xl p-4"
-              >
-                <p className="text-sm text-gray-300 leading-relaxed">
-                  {item.text}
-                </p>
-              </div>
-            ))}
+          <div style={{ marginBottom: "16px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+              <span style={{ color: "#9CA3AF", fontSize: "12px" }}>Overall Completion</span>
+              <span style={{ color: "#F97316", fontSize: "12px", fontWeight: "600" }}>{profile?.roadmapProgress || 0}%</span>
+            </div>
+            <div style={{ width: "100%", height: "6px", background: "#1F2937", borderRadius: "999px", overflow: "hidden" }}>
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${profile?.roadmapProgress || 0}%` }}
+                transition={{ delay: 0.5, duration: 1 }}
+                style={{ height: "100%", background: "linear-gradient(to right, #EA580C, #FB923C)", borderRadius: "999px" }}
+              />
+            </div>
           </div>
 
-        </motion.div>
-      </div>
-
-      {/* BOTTOM SECTION */}
-      <div className="grid grid-cols-12 gap-3 md:gap-5">
-
-        {/* RECENT ACTIVITY */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          className="col-span-12 xl:col-span-6 bg-[#111827] border border-[#1F2937] rounded-2xl p-6"
-        >
-
-          <h2 className="text-white text-lg font-semibold mb-5">
-            Recent Activity
-          </h2>
-
-          <div className="space-y-3">
-
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", marginBottom: "16px" }}>
             {[
-              {
-                icon: CheckCircle,
-                text: "Profile updated",
-                time: "Just now",
-                color: "text-green-400",
-              },
-
-              {
-                icon: Star,
-                text: "Skills added to profile",
-                time: "Today",
-                color: "text-orange-400",
-              },
-
-              {
-                icon: BookOpen,
-                text: "Joined PathForge",
-                time: `${getDaysOnPlatform()} day(s) ago`,
-                color: "text-blue-400",
-              },
-
-              {
-                icon: Clock,
-                text: "Resume not uploaded yet",
-                time: "Pending",
-                color: "text-gray-500",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-4 bg-gray-800 rounded-xl p-4"
-              >
-                <item.icon
-                  size={18}
-                  className={item.color}
-                />
-
-                <div>
-                  <p className="text-white text-sm font-medium">
-                    {item.text}
-                  </p>
-
-                  <p className="text-gray-500 text-xs mt-1">
-                    {item.time}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-        </motion.div>
-
-        {/* NEXT STEPS */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="col-span-12 xl:col-span-6 bg-[#111827] border border-[#1F2937] rounded-2xl p-6"
-        >
-
-          <h2 className="text-white text-lg font-semibold mb-5">
-            Recommended Next Steps
-          </h2>
-
-          <div className="space-y-3 mb-5">
-
-            {[
-              {
-                text: "Complete System Design Course",
-                path: "/recommendations",
-              },
-
-              {
-                text: "Upload your resume for AI analysis",
-                path: "/resume",
-              },
-
-              {
-                text: "Generate your Dream Role Roadmap",
-                path: "/roadmap",
-              },
-
-              {
-                text: "Apply to internships",
-                path: "/recommendations",
-              },
-            ].map((step, i) => (
-              <div
-                key={i}
-                onClick={() => navigate(step.path)}
-                className="flex items-center gap-3 bg-gray-800 hover:bg-gray-700 rounded-xl p-4 cursor-pointer transition"
-              >
-
-                <input
-                  type="checkbox"
-                  className="accent-orange-500"
-                />
-
-                <p className="text-sm text-gray-300">
-                  {step.text}
-                </p>
-
+              { label: "Completed", value: "0", color: "#4ADE80", bg: "rgba(74,222,128,0.1)" },
+              { label: "In Progress", value: "0", color: "#FB923C", bg: "rgba(251,146,60,0.1)" },
+              { label: "Upcoming", value: "0", color: "#6B7280", bg: "rgba(107,114,128,0.1)" },
+            ].map((s) => (
+              <div key={s.label} style={{ background: s.bg, borderRadius: "10px", padding: "12px", textAlign: "center" }}>
+                <p style={{ fontSize: "22px", fontWeight: "700", color: s.color }}>{s.value}</p>
+                <p style={{ fontSize: "11px", color: "#6B7280", marginTop: "2px" }}>{s.label}</p>
               </div>
             ))}
           </div>
 
           <motion.button
             whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/roadmap")}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-2xl font-medium flex items-center justify-center gap-2 transition"
+            style={{ width: "100%", background: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.3)", color: "#FB923C", padding: "10px", borderRadius: "10px", fontSize: "13px", fontWeight: "500", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", cursor: "pointer" }}
           >
-            View Full Roadmap
-
-            <ArrowRight size={16} />
+            <Zap size={14} />
+            Generate Your Roadmap with AI
+            <ArrowRight size={14} />
           </motion.button>
+        </motion.div>
 
+        {/* AI Insights */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="bg-gray-900 border border-orange-500/20 rounded-xl"
+          style={{ padding: "20px" }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+            <Sparkles size={15} className="text-orange-500" />
+            <h2 style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>AI Insights</h2>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {[
+              "Complete your profile to unlock AI-powered recommendations.",
+              "Upload your resume this week to receive ATS analysis.",
+              "Your profile matches 0% of your target role requirements.",
+            ].map((text, i) => (
+              <div key={i} style={{ background: "#1F2937", borderRadius: "8px", padding: "10px" }}>
+                <p style={{ color: "#D1D5DB", fontSize: "12px", lineHeight: "1.5" }}>{text}</p>
+              </div>
+            ))}
+          </div>
         </motion.div>
       </div>
 
-      {/* SKILLS */}
+      {/* Bottom Row */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+
+        {/* Recent Activity */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="bg-gray-900 border border-gray-800 rounded-xl"
+          style={{ padding: "20px" }}
+        >
+          <h2 style={{ color: "white", fontSize: "14px", fontWeight: "600", marginBottom: "12px" }}>Recent Activity</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {[
+              { icon: CheckCircle, text: "Profile updated", time: "Just now", color: "#4ADE80" },
+              { icon: Star, text: "Skills added to profile", time: "Today", color: "#FB923C" },
+              { icon: BookOpen, text: "Joined PathForge", time: `${getDaysOnPlatform()} day(s) ago`, color: "#60A5FA" },
+              { icon: Clock, text: "Resume not uploaded yet", time: "Pending", color: "#6B7280" },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", background: "#1F2937", borderRadius: "8px", padding: "10px" }}>
+                <item.icon size={15} style={{ color: item.color, flexShrink: 0 }} />
+                <div>
+                  <p style={{ color: "white", fontSize: "12px", fontWeight: "500" }}>{item.text}</p>
+                  <p style={{ color: "#6B7280", fontSize: "11px", marginTop: "2px" }}>{item.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Next Steps */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+          className="bg-gray-900 border border-gray-800 rounded-xl"
+          style={{ padding: "20px" }}
+        >
+          <h2 style={{ color: "white", fontSize: "14px", fontWeight: "600", marginBottom: "12px" }}>Recommended Next Steps</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "12px" }}>
+            {[
+              { text: "Complete System Design Course", path: "/recommendations" },
+              { text: "Upload resume for AI analysis", path: "/resume" },
+              { text: "Generate Dream Role Roadmap", path: "/roadmap" },
+              { text: "Apply to internships", path: "/recommendations" },
+            ].map((step, i) => (
+              <div
+                key={i}
+                onClick={() => navigate(step.path)}
+                style={{ display: "flex", alignItems: "center", gap: "10px", background: "#1F2937", borderRadius: "8px", padding: "10px", cursor: "pointer" }}
+              >
+                <input type="checkbox" style={{ accentColor: "#F97316", width: "14px", height: "14px" }} onClick={(e) => e.stopPropagation()} />
+                <p style={{ color: "#D1D5DB", fontSize: "12px" }}>{step.text}</p>
+              </div>
+            ))}
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/roadmap")}
+            style={{ width: "100%", background: "#F97316", color: "white", padding: "10px", borderRadius: "10px", fontSize: "13px", fontWeight: "500", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", cursor: "pointer", border: "none" }}
+          >
+            View Full Roadmap
+            <ArrowRight size={14} />
+          </motion.button>
+        </motion.div>
+      </div>
+
+      {/* Skills */}
       {profile?.skills?.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45 }}
-          className="bg-[#111827] border border-[#1F2937] rounded-2xl p-5"
+          transition={{ delay: 0.5 }}
+          className="bg-gray-900 border border-gray-800 rounded-xl"
+          style={{ padding: "16px" }}
         >
-
-          <div className="flex items-center justify-between mb-4">
-
-            <h2 className="text-white text-lg font-semibold">
-              Your Skills
-            </h2>
-
-            <button
-              onClick={() => navigate("/profile")}
-              className="text-orange-500 text-sm hover:underline"
-            >
-              Edit →
-            </button>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+            <h2 style={{ color: "white", fontSize: "13px", fontWeight: "600" }}>Your Skills</h2>
+            <button onClick={() => navigate("/profile")} style={{ color: "#F97316", fontSize: "12px", background: "none", border: "none", cursor: "pointer" }}>Edit →</button>
           </div>
-
-          <div className="flex flex-wrap gap-2">
-
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
             {profile.skills.map((skill, i) => (
               <motion.span
                 key={skill}
                 initial={{ opacity: 0, scale: 0.7 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  delay: 0.5 + i * 0.03,
-                }}
-                className="bg-orange-500/10 border border-orange-500/30 text-orange-400 px-3 py-1 rounded-full text-sm"
+                transition={{ delay: 0.6 + i * 0.03 }}
+                style={{ background: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.3)", color: "#FB923C", padding: "3px 10px", borderRadius: "999px", fontSize: "11px" }}
               >
                 {skill}
               </motion.span>
             ))}
           </div>
-
         </motion.div>
       )}
+
     </div>
   );
 };

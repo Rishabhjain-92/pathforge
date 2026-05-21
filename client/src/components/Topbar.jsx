@@ -5,34 +5,40 @@ const Topbar = () => {
   const { user } = useAuth();
 
   return (
-    <div className="fixed top-0 left-56 right-0 h-14 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 md:px-6 lg:px-8 z-10">
-
-      {/* Search */}
-      <div className="hidden sm:flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2 flex-1 max-w-sm">
-        <span className="text-gray-400 text-sm">🔍</span>
-        <input
-          type="text"
-          placeholder="Search..."
-          className="bg-transparent text-sm text-gray-300 outline-none w-full placeholder-gray-500"
-        />
+    <div
+      style={{
+        left: "240px",
+        height: "56px",
+      }}
+      className="fixed top-0 right-0 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-5 z-10"
+    >
+      {/* Left */}
+      <div className="flex items-center gap-2">
+        <div className="w-1 h-5 bg-orange-500 rounded-full" />
+        <span className="text-gray-400 text-sm">
+          Forge your path, one step at a time.
+        </span>
       </div>
 
-      {/* Right side */}
-      <div className="flex items-center gap-4 ml-auto">
-        <button className="text-gray-400 hover:text-white transition">
-          <Bell size={20} />
+      {/* Right */}
+      <div className="flex items-center gap-3">
+        <button className="relative w-8 h-8 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition border border-gray-700">
+          <Bell size={15} />
+          <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-orange-500 rounded-full" />
         </button>
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+
+        <div className="flex items-center gap-2 bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+          <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
-          <div className="hidden sm:block">
-            <p className="text-white text-sm font-medium">{user?.name}</p>
-            <p className="text-gray-400 text-xs">{user?.email}</p>
+          <div>
+            <p className="text-white text-xs font-medium leading-none">
+              {user?.name}
+            </p>
+            <p className="text-gray-400 text-xs mt-0.5">Student</p>
           </div>
         </div>
       </div>
-
     </div>
   );
 };
