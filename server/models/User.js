@@ -43,6 +43,21 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    resumeUrl: {
+      type: String,
+      default: "",
+    },
+    resumeText: {
+      type: String,
+      default: "",
+    },
+    resumeFileName: {
+      type: String,
+      default: "",
+    },
+    resumeUploadedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
