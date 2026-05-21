@@ -1,7 +1,35 @@
 const cloudinary = require("../config/cloudinary");
-const pdfParse = require("pdf-parse");
 const mammoth = require("mammoth");
 const User = require("../models/User");
+
+const extractPdfText = async (buffer) => {
+  try {
+    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const pdfjsLibResolved = pdfjsLib.default || pdfjsLib;
+
+    const loadingTask = pdfjsLibResolved.getDocument({
+      data: new Uint8Array(buffer),
+    });
+    const pdf = await loadingTask.promise;
+
+    let fullText = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map((item) => item.str).join(" ");
+      fullText += pageText + "\n";
+    }
+
+    return fullText.trim();
+  } catch (err) {
+    console.error("extractPdfText internal error:", err);
+    throw new Error(
+      typeof err === "string"
+        ? err
+        : err?.message || JSON.stringify(err) || "Unknown PDF error"
+    );
+  }
+};
 
 const uploadResume = async (req, res) => {
   try {
@@ -12,31 +40,29 @@ const uploadResume = async (req, res) => {
     const file = req.file;
     let extractedText = "";
 
-    // Extract text based on file type
     if (file.mimetype === "application/pdf") {
-      const pdfData = await pdfParse(file.buffer);
-      extractedText = pdfData.text;
+      extractedText = await extractPdfText(file.buffer);
     } else {
       const result = await mammoth.extractRawText({ buffer: file.buffer });
       extractedText = result.value;
     }
 
-    // Upload to Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          resource_type: "raw",
-          folder: "pathforge/resumes",
-          public_id: `resume_${req.user.id}_${Date.now()}`,
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      ).end(file.buffer);
+      cloudinary.uploader
+        .upload_stream(
+          {
+            resource_type: "raw",
+            folder: "pathforge/resumes",
+            public_id: `resume_${req.user.id}_${Date.now()}`,
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        )
+        .end(file.buffer);
     });
 
-    // Update user with resume URL and extracted text
     await User.findByIdAndUpdate(req.user.id, {
       resumeUrl: uploadResult.secure_url,
       resumeText: extractedText,
@@ -51,9 +77,16 @@ const uploadResume = async (req, res) => {
       fileName: file.originalname,
       extractedText: extractedText.slice(0, 500),
     });
-
   } catch (error) {
-    res.status(500).json({ message: "Upload failed", error: error.message });
+    console.error("Upload error full object:", error);
+    res.status(500).json({
+      message: "Upload failed",
+      error:
+        typeof error === "string"
+          ? error
+          : error?.message || JSON.stringify(error) || "Unknown error",
+      stack: error?.stack || "No stack available",
+    });
   }
 };
 
