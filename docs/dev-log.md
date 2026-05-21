@@ -443,3 +443,42 @@ A beautiful visual dashboard showing:
 - How Layout component wraps children
 - How fixed positioning works with sidebar + topbar
 - How to create reusable layout structure
+
+## Day 5 — May 21, 2026
+**Focus:** Frontend Layout + Dashboard UI
+
+### Features Completed
+- Removed Topbar — moved user info to Sidebar
+- Fixed overlap issue completely
+- Built full Dashboard UI with animations
+- Stat cards, Roadmap Progress, AI Insights
+- Recent Activity + Recommended Next Steps
+- Skills section at bottom
+- Landing Page, About Page, Contact Page built
+- Login + Register UI upgraded with animations
+
+### What I Learned
+- Inline CSS vs Tailwind rendering differences
+- Fixed positioning with sidebar + content
+- Framer Motion animations
+- React Router NavLink active states
+- Context API for user data sharing
+
+
+**Focus:** Profile Page UI
+
+### Features Completed
+- Profile page UI built
+- Avatar with orange glow
+- Autocomplete for Role, Company, Skills
+- Profile completion progress bar
+- Timeline slider
+- Skill tags with add/remove
+- Save button with success state
+- Background glow effects
+
+### What I Learned
+- Autocomplete with useRef and useEffect
+- AnimatePresence for enter/exit animations
+- Sticky positioning for left card
+- Inline CSS for consistent rendering
