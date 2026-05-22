@@ -58,6 +58,11 @@ const userSchema = new mongoose.Schema(
     resumeUploadedAt: {
       type: Date,
     },
+    resumeAnalysis: {
+      type: String,
+     default: "",
+   },
+    
   },
   {
     timestamps: true,
