@@ -482,3 +482,26 @@ A beautiful visual dashboard showing:
 - AnimatePresence for enter/exit animations
 - Sticky positioning for left card
 - Inline CSS for consistent rendering
+
+
+## Day 7 — May 22, 2026
+**Focus:** Resume Upload System
+
+### Backend
+- Multer setup for file handling
+- Cloudinary integration for storage
+- pdf-parse + mammoth for text extraction
+- Resume upload API working
+- GET resume API working
+
+### Frontend
+- Drag & drop upload area
+- File upload with progress
+- Resume info cards
+- ATS Score placeholder
+- Missing Skills placeholder
+- Analyze button ready for AI
+
+### APIs Working
+- POST /api/resume/upload ✅
+- GET /api/resume ✅
