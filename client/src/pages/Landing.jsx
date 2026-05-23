@@ -67,7 +67,7 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white overflow-x-hidden transition-colors duration-300">
 
       {/* Particle field */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -123,7 +123,7 @@ const Landing = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
           >
             PathForge reverse-engineers your journey to your dream company.
             Get a personalized roadmap, AI resume analysis, skill gap insights,
@@ -155,7 +155,7 @@ const Landing = () => {
               <motion.button
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
-                className="bg-gray-800/80 hover:bg-gray-700/80 text-white font-semibold px-8 py-4 rounded-xl border border-gray-700/60 hover:border-gray-600 text-lg backdrop-blur-sm transition-all duration-200"
+                className="bg-white/80 dark:bg-gray-800/80 hover:bg-gray-100 dark:hover:bg-gray-700/80 text-gray-900 dark:text-white font-semibold px-8 py-4 rounded-xl border border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600 text-lg backdrop-blur-sm transition-all duration-200 shadow-sm dark:shadow-none"
               >
                 Learn More
               </motion.button>
@@ -166,7 +166,7 @@ const Landing = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.65 }}
-            className="text-gray-500 text-sm mt-6"
+            className="text-gray-500 dark:text-gray-500 text-sm mt-6"
           >
             ✨ Free to use • No credit card required • Built for Indian students
           </motion.p>
@@ -187,7 +187,7 @@ const Landing = () => {
       </section>
 
       {/* Stats */}
-      <section className="py-14 px-6 border-y border-gray-800/60 relative z-10">
+      <section className="py-14 px-6 border-y border-gray-200 dark:border-gray-800/60 relative z-10 bg-white/50 dark:bg-transparent backdrop-blur-sm">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
             <motion.div
@@ -199,10 +199,10 @@ const Landing = () => {
               whileHover={{ scale: 1.05 }}
               className="text-center group"
             >
-              <p className="text-3xl font-black bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
+              <p className="text-3xl font-black bg-gradient-to-r from-orange-500 to-amber-500 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent">
                 {stat.value}
               </p>
-              <p className="text-gray-400 text-sm mt-1">{stat.label}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{stat.label}</p>
             </motion.div>
           ))}
         </div>
@@ -217,11 +217,11 @@ const Landing = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
               Everything You Need to
-              <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent"> Get Placed</span>
+              <span className="bg-gradient-to-r from-orange-500 to-amber-500 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent"> Get Placed</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
               PathForge combines AI, ML, and smart planning to give you an unfair advantage.
             </p>
           </motion.div>
@@ -235,20 +235,21 @@ const Landing = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ y: -8 }}
-                className={`group relative bg-gradient-to-br ${feature.bg} bg-gray-900 border ${feature.border} rounded-2xl p-6 cursor-default overflow-hidden transition-all duration-300 hover:shadow-2xl ${feature.glow}`}
+                className={`group relative bg-white dark:bg-gray-900 border ${feature.border} rounded-2xl p-6 cursor-default overflow-hidden transition-all duration-300 hover:shadow-xl dark:hover:shadow-2xl ${feature.glow} shadow-sm`}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.bg} opacity-50 dark:opacity-100 pointer-events-none`} />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                 <motion.div
                   whileHover={{ rotate: 10, scale: 1.1 }}
                   transition={{ type: "spring", stiffness: 300 }}
-                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.iconBg} flex items-center justify-center mb-4 shadow-lg`}
+                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.iconBg} flex items-center justify-center mb-4 shadow-md relative z-10`}
                 >
                   <feature.icon size={22} className="text-white" />
                 </motion.div>
 
-                <h3 className="text-white font-bold text-lg mb-2">{feature.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{feature.desc}</p>
+                <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-2 relative z-10">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed relative z-10">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -264,11 +265,11 @@ const Landing = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
               How PathForge
-              <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent"> Works</span>
+              <span className="bg-gradient-to-r from-orange-500 to-amber-500 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent"> Works</span>
             </h2>
-            <p className="text-gray-400 text-lg">Four simple steps to your dream placement</p>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">Four simple steps to your dream placement</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -294,13 +295,13 @@ const Landing = () => {
                 )}
                 <motion.div
                   whileHover={{ y: -6 }}
-                  className="bg-gray-900/80 border border-gray-800/70 rounded-2xl p-6 relative z-10 group-hover:border-gray-700 transition-all duration-300 backdrop-blur-sm"
+                  className="bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800/70 rounded-2xl p-6 relative z-10 group-hover:border-gray-300 dark:group-hover:border-gray-700 transition-all duration-300 backdrop-blur-sm shadow-sm dark:shadow-none"
                 >
-                  <div className={`text-5xl font-black bg-gradient-to-br ${step.color} bg-clip-text text-transparent mb-3 opacity-60 group-hover:opacity-100 transition-opacity`}>
+                  <div className={`text-5xl font-black bg-gradient-to-br ${step.color} bg-clip-text text-transparent mb-3 opacity-80 dark:opacity-60 group-hover:opacity-100 transition-opacity`}>
                     {step.step}
                   </div>
-                  <h3 className="text-white font-bold mb-2">{step.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{step.desc}</p>
+                  <h3 className="text-gray-900 dark:text-white font-bold mb-2">{step.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{step.desc}</p>
                 </motion.div>
               </motion.div>
             ))}
@@ -318,18 +319,18 @@ const Landing = () => {
             className="relative group"
           >
             <div className="absolute -inset-px rounded-3xl bg-gradient-to-r from-orange-500/50 via-amber-400/30 to-orange-500/50 opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-700" />
-            <div className="relative bg-gray-900/90 border border-orange-500/20 group-hover:border-orange-500/40 rounded-3xl p-12 backdrop-blur-xl overflow-hidden">
+            <div className="relative bg-white/90 dark:bg-gray-900/90 border border-orange-500/20 group-hover:border-orange-500/40 rounded-3xl p-12 backdrop-blur-xl overflow-hidden shadow-xl dark:shadow-none">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-px bg-gradient-to-r from-transparent via-orange-500/60 to-transparent" />
               <motion.div
-                animate={{ scale: [1, 1.1, 1], opacity: [0.03, 0.07, 0.03] }}
+                animate={{ scale: [1, 1.1, 1], opacity: [0.02, 0.05, 0.02] }}
                 transition={{ duration: 4, repeat: Infinity }}
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-orange-500 rounded-full blur-3xl pointer-events-none"
               />
               <div className="relative z-10">
-                <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+                <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
                   Ready to Forge Your Path?
                 </h2>
-                <p className="text-gray-400 text-lg mb-10">
+                <p className="text-gray-600 dark:text-gray-400 text-lg mb-10">
                   Join hundreds of students already using PathForge to land their dream jobs.
                 </p>
                 <Link to="/register">
@@ -354,17 +355,17 @@ const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800/60 py-10 px-6 relative z-10">
+      <footer className="border-t border-gray-200 dark:border-gray-800/60 py-10 px-6 relative z-10 bg-white/50 dark:bg-transparent backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Logo */}
                <Link to="/" className="flex items-center gap-2.5">
                  <img src={logo} alt="PathForge" className="w-8 h-8" />
-                 <span className="text-white font-bold text-lg">PathForge</span>
+                 <span className="text-gray-900 dark:text-white font-bold text-lg">PathForge</span>
                </Link>
        
-          <div className="flex items-center gap-6 text-sm text-gray-400">
+          <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
             {["Home", "About", "Contact", "Login"].map((item) => (
-              <Link key={item} to={item === "Home" ? "/" : `/${item.toLowerCase()}`} className="hover:text-white transition-colors duration-200">
+              <Link key={item} to={item === "Home" ? "/" : `/${item.toLowerCase()}`} className="hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                 {item}
               </Link>
             ))}

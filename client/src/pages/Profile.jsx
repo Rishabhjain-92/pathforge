@@ -55,28 +55,25 @@ const AutoInput = ({ label, name, value, onChange, suggestions, placeholder }) =
   };
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
-      <label style={{ color: "#9CA3AF", fontSize: "13px", display: "block", marginBottom: "6px" }}>
+    <div ref={ref} className="relative">
+      <label className="text-gray-600 dark:text-gray-400 text-sm block mb-1.5">
         {label}
       </label>
       <input
         type="text" name={name} value={value} onChange={handleInput} placeholder={placeholder}
-        style={{ width: "100%", backgroundColor: "#1F2937", color: "white", padding: "11px 14px", borderRadius: "10px", border: "1px solid #374151", fontSize: "14px", outline: "none", boxSizing: "border-box" }}
-        onFocus={(e) => { e.target.style.borderColor = "#F97316"; if (value.length > 0) setShow(true); }}
-        onBlur={(e) => e.target.style.borderColor = "#374151"}
+        className="w-full bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm outline-none focus:border-orange-500 transition-colors"
+        onFocus={(e) => { if (value.length > 0) setShow(true); }}
       />
       <AnimatePresence>
         {show && filtered.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
-            style={{ position: "absolute", top: "100%", left: 0, right: 0, backgroundColor: "#1F2937", border: "1px solid #374151", borderRadius: "10px", marginTop: "4px", zIndex: 100, overflow: "hidden" }}
+            className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl mt-1 z-50 overflow-hidden shadow-lg"
           >
             {filtered.map((s) => (
               <div key={s}
                 onClick={() => { onChange({ target: { name, value: s } }); setShow(false); }}
-                style={{ padding: "10px 14px", cursor: "pointer", fontSize: "13px", color: "#D1D5DB", borderBottom: "1px solid #374151" }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(249,115,22,0.1)"; e.currentTarget.style.color = "#F97316"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#D1D5DB"; }}
+                className="px-4 py-2.5 cursor-pointer text-sm text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-orange-500/10 hover:text-orange-500 dark:hover:text-orange-500 transition-colors"
               >
                 {s}
               </div>
@@ -187,91 +184,89 @@ const Profile = () => {
   }
 
   return (
-    <div style={{ position: "relative" }}>
-      <div style={{ position: "fixed", top: "100px", right: "100px", width: "300px", height: "300px", background: "radial-gradient(circle, rgba(249,115,22,0.06) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
-      <div style={{ position: "fixed", bottom: "100px", left: "300px", width: "250px", height: "250px", background: "radial-gradient(circle, rgba(96,165,250,0.05) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
+    <div className="relative">
+      <div className="fixed top-[100px] right-[100px] w-[300px] h-[300px] bg-orange-500/5 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="fixed bottom-[100px] left-[300px] w-[250px] h-[250px] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl pointer-events-none z-0" />
 
-      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div className="relative z-10 flex flex-col gap-5">
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 style={{ color: "white", fontSize: "22px", fontWeight: "700" }}>Profile Settings</h1>
-          <p style={{ color: "#6B7280", fontSize: "14px", marginTop: "4px" }}>Manage your personal information and career goals</p>
+          <h1 className="text-gray-900 dark:text-white text-2xl font-bold">Profile Settings</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Manage your personal information and career goals</p>
         </motion.div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "20px", alignItems: "start" }}>
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 items-start">
 
           {/* Left Card */}
           <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
-            style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "28px", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "sticky", top: "20px" }}
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-7 flex flex-col items-center text-center lg:sticky lg:top-5 shadow-sm dark:shadow-none"
           >
             <motion.div whileHover={{ scale: 1.05 }}
-              style={{ width: "80px", height: "80px", background: "linear-gradient(135deg, #F97316, #EA580C)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "32px", fontWeight: "700", color: "white", marginBottom: "16px", boxShadow: "0 0 30px rgba(249,115,22,0.35)" }}
+              className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-orange-500/30"
             >
               {formData.name?.charAt(0).toUpperCase()}
             </motion.div>
 
-            <p style={{ color: "white", fontWeight: "700", fontSize: "18px" }}>{formData.name}</p>
-            <p style={{ color: "#6B7280", fontSize: "13px", marginTop: "4px" }}>{user?.email}</p>
+            <p className="text-gray-900 dark:text-white font-bold text-lg">{formData.name}</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{user?.email}</p>
 
-            <div style={{ width: "100%", height: "1px", backgroundColor: "#1F2937", margin: "20px 0" }} />
+            <div className="w-full h-px bg-gray-200 dark:bg-gray-800 my-5" />
 
-            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div className="w-full flex flex-col gap-2.5">
               {[
-                { label: "Target Role", value: formData.targetRole || "Not set", color: "#60A5FA" },
-                { label: "Dream Company", value: formData.targetCompany || "Not set", color: "#4ADE80" },
-                { label: "Timeline", value: `${formData.timeline} months`, color: "#F97316" },
-                { label: "Skills Added", value: `${formData.skills.length}`, color: "#A78BFA" },
+                { label: "Target Role", value: formData.targetRole || "Not set", colorClass: "text-blue-500" },
+                { label: "Dream Company", value: formData.targetCompany || "Not set", colorClass: "text-green-500" },
+                { label: "Timeline", value: `${formData.timeline} months`, colorClass: "text-orange-500" },
+                { label: "Skills Added", value: `${formData.skills.length}`, colorClass: "text-purple-500" },
               ].map((stat) => (
-                <div key={stat.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", backgroundColor: "#1F2937", borderRadius: "10px" }}>
-                  <span style={{ color: "#9CA3AF", fontSize: "13px" }}>{stat.label}</span>
-                  <span style={{ color: stat.color, fontSize: "13px", fontWeight: "600", maxWidth: "120px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{stat.value}</span>
+                <div key={stat.label} className="flex justify-between items-center px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                  <span className="text-gray-500 dark:text-gray-400 text-sm">{stat.label}</span>
+                  <span className={`${stat.colorClass} text-sm font-semibold max-w-[120px] truncate`}>{stat.value}</span>
                 </div>
               ))}
             </div>
 
-            <div style={{ width: "100%", marginTop: "20px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                <span style={{ color: "#9CA3AF", fontSize: "13px" }}>Profile Complete</span>
-                <span style={{ color: "#F97316", fontSize: "13px", fontWeight: "600" }}>
+            <div className="w-full mt-5">
+              <div className="flex justify-between mb-2">
+                <span className="text-gray-500 dark:text-gray-400 text-sm">Profile Complete</span>
+                <span className="text-orange-500 text-sm font-semibold">
                   {Math.min(100, [formData.name, formData.targetRole, formData.targetCompany, formData.skills.length > 0].filter(Boolean).length * 25)}%
                 </span>
               </div>
-              <div style={{ width: "100%", height: "6px", backgroundColor: "#1F2937", borderRadius: "999px", overflow: "hidden" }}>
+              <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min(100, [formData.name, formData.targetRole, formData.targetCompany, formData.skills.length > 0].filter(Boolean).length * 25)}%` }}
                   transition={{ duration: 0.8 }}
-                  style={{ height: "100%", background: "linear-gradient(to right, #EA580C, #FB923C)", borderRadius: "999px" }}
+                  className="h-full bg-gradient-to-r from-orange-600 to-orange-400 rounded-full"
                 />
               </div>
             </div>
           </motion.div>
 
           {/* Right Side */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div className="flex flex-col gap-4">
 
             {/* Personal Info */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-              style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "24px" }}
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm dark:shadow-none"
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
-                <div style={{ width: "32px", height: "32px", backgroundColor: "rgba(249,115,22,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <User size={16} color="#F97316" />
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="w-8 h-8 bg-orange-50 dark:bg-orange-500/10 rounded-lg flex items-center justify-center">
+                  <User size={16} className="text-orange-500" />
                 </div>
-                <h3 style={{ color: "white", fontSize: "16px", fontWeight: "600" }}>Personal Information</h3>
+                <h3 className="text-gray-900 dark:text-white text-base font-semibold">Personal Information</h3>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 <div>
-                  <label style={{ color: "#9CA3AF", fontSize: "13px", display: "block", marginBottom: "7px" }}>Full Name</label>
+                  <label className="text-gray-600 dark:text-gray-400 text-sm block mb-1.5">Full Name</label>
                   <input type="text" name="name" value={formData.name} onChange={handleChange}
-                    style={{ width: "100%", backgroundColor: "#1F2937", color: "white", padding: "12px 14px", borderRadius: "10px", border: "1px solid #374151", fontSize: "14px", outline: "none", boxSizing: "border-box" }}
-                    onFocus={(e) => e.target.style.borderColor = "#F97316"}
-                    onBlur={(e) => e.target.style.borderColor = "#374151"}
+                    className="w-full bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm outline-none focus:border-orange-500 transition-colors"
                   />
                 </div>
                 <div>
-                  <label style={{ color: "#9CA3AF", fontSize: "13px", display: "block", marginBottom: "7px" }}>Email Address</label>
+                  <label className="text-gray-600 dark:text-gray-400 text-sm block mb-1.5">Email Address</label>
                   <input type="text" value={user?.email} disabled
-                    style={{ width: "100%", backgroundColor: "#0F172A", color: "#6B7280", padding: "12px 14px", borderRadius: "10px", border: "1px solid #1F2937", fontSize: "14px", outline: "none", cursor: "not-allowed", boxSizing: "border-box" }}
+                    className="w-full bg-gray-100 dark:bg-gray-800/50 text-gray-500 dark:text-gray-500 px-3.5 py-3 rounded-xl border border-gray-200 dark:border-gray-800 text-sm outline-none cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -279,69 +274,66 @@ const Profile = () => {
 
             {/* Career Goals */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "24px" }}
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm dark:shadow-none"
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
-                <div style={{ width: "32px", height: "32px", backgroundColor: "rgba(249,115,22,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Briefcase size={16} color="#F97316" />
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="w-8 h-8 bg-orange-50 dark:bg-orange-500/10 rounded-lg flex items-center justify-center">
+                  <Briefcase size={16} className="text-orange-500" />
                 </div>
-                <h3 style={{ color: "white", fontSize: "16px", fontWeight: "600" }}>Career Goals</h3>
+                <h3 className="text-gray-900 dark:text-white text-base font-semibold">Career Goals</h3>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "18px" }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 mb-4.5">
                 <AutoInput label="Dream Role" name="targetRole" value={formData.targetRole} onChange={handleChange} suggestions={ROLE_SUGGESTIONS} placeholder="e.g. Software Engineer" />
                 <AutoInput label="Dream Company" name="targetCompany" value={formData.targetCompany} onChange={handleChange} suggestions={COMPANY_SUGGESTIONS} placeholder="e.g. Google" />
               </div>
-              <div>
-                <label style={{ color: "#9CA3AF", fontSize: "13px", display: "block", marginBottom: "8px" }}>
-                  Timeline — <span style={{ color: "#F97316", fontWeight: "700" }}>{formData.timeline} months</span>
+              <div className="mt-4">
+                <label className="text-gray-600 dark:text-gray-400 text-sm block mb-2">
+                  Timeline — <span className="text-orange-500 font-bold">{formData.timeline} months</span>
                 </label>
                 <input type="range" name="timeline" min="3" max="24" value={formData.timeline} onChange={handleChange}
-                  style={{ width: "100%", accentColor: "#F97316", cursor: "pointer" }} />
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: "4px" }}>
-                  <span style={{ color: "#6B7280", fontSize: "12px" }}>3 months</span>
-                  <span style={{ color: "#6B7280", fontSize: "12px" }}>24 months</span>
+                  className="w-full accent-orange-500 cursor-pointer" />
+                <div className="flex justify-between mt-1">
+                  <span className="text-gray-500 dark:text-gray-500 text-xs">3 months</span>
+                  <span className="text-gray-500 dark:text-gray-500 text-xs">24 months</span>
                 </div>
               </div>
             </motion.div>
 
             {/* Skills */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-              style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "24px" }}
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm dark:shadow-none"
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
-                <div style={{ width: "32px", height: "32px", backgroundColor: "rgba(249,115,22,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <Zap size={16} color="#F97316" />
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="w-8 h-8 bg-orange-50 dark:bg-orange-500/10 rounded-lg flex items-center justify-center">
+                  <Zap size={16} className="text-orange-500" />
                 </div>
-                <h3 style={{ color: "white", fontSize: "16px", fontWeight: "600" }}>Your Skills</h3>
-                <span style={{ marginLeft: "auto", backgroundColor: "rgba(249,115,22,0.1)", color: "#F97316", padding: "2px 10px", borderRadius: "999px", fontSize: "12px" }}>
+                <h3 className="text-gray-900 dark:text-white text-base font-semibold">Your Skills</h3>
+                <span className="ml-auto bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-500 px-2.5 py-0.5 rounded-full text-xs">
                   {formData.skills.length} added
                 </span>
               </div>
 
-              <div style={{ position: "relative", marginBottom: "14px" }}>
-                <div style={{ display: "flex", gap: "8px" }}>
+              <div className="relative mb-3.5">
+                <div className="flex gap-2">
                   <input type="text" value={skillInput} onChange={handleSkillInput}
                     onKeyDown={(e) => e.key === "Enter" && addSkill()}
                     placeholder="Type a skill and press Enter..."
-                    style={{ flex: 1, backgroundColor: "#1F2937", color: "white", padding: "12px 14px", borderRadius: "10px", border: "1px solid #374151", fontSize: "14px", outline: "none" }}
-                    onFocus={(e) => e.target.style.borderColor = "#F97316"}
-                    onBlur={(e) => { e.target.style.borderColor = "#374151"; setTimeout(() => setShowSkillSuggestions(false), 150); }}
+                    className="flex-1 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white px-3.5 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm outline-none focus:border-orange-500 transition-colors"
+                    onBlur={() => setTimeout(() => setShowSkillSuggestions(false), 150)}
                   />
                   <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => addSkill()}
-                    style={{ backgroundColor: "#F97316", color: "white", padding: "12px 16px", borderRadius: "10px", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 rounded-xl flex items-center justify-center transition-colors">
                     <Plus size={18} />
                   </motion.button>
                 </div>
                 <AnimatePresence>
                   {showSkillSuggestions && filteredSkills.length > 0 && (
                     <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                      style={{ position: "absolute", top: "100%", left: 0, right: "56px", backgroundColor: "#1F2937", border: "1px solid #374151", borderRadius: "10px", marginTop: "4px", zIndex: 100, overflow: "hidden" }}
+                      className="absolute top-full left-0 right-14 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl mt-1 z-50 overflow-hidden shadow-lg"
                     >
                       {filteredSkills.map((s) => (
                         <div key={s} onMouseDown={() => addSkill(s)}
-                          style={{ padding: "10px 14px", cursor: "pointer", fontSize: "13px", color: "#D1D5DB", borderBottom: "1px solid #374151", display: "flex", alignItems: "center", gap: "8px" }}
-                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(249,115,22,0.1)"; e.currentTarget.style.color = "#F97316"; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "#D1D5DB"; }}
+                          className="px-3.5 py-2.5 cursor-pointer text-sm text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2 hover:bg-orange-50 dark:hover:bg-orange-500/10 hover:text-orange-500 dark:hover:text-orange-500 transition-colors"
                         >
                           <Plus size={12} />{s}
                         </div>
@@ -351,17 +343,17 @@ const Profile = () => {
                 </AnimatePresence>
               </div>
 
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", minHeight: "40px" }}>
+              <div className="flex flex-wrap gap-2 min-h-[40px]">
                 {formData.skills.length === 0 && (
-                  <p style={{ color: "#6B7280", fontSize: "13px" }}>No skills added yet. Start typing above.</p>
+                  <p className="text-gray-500 dark:text-gray-500 text-sm">No skills added yet. Start typing above.</p>
                 )}
                 <AnimatePresence>
                   {formData.skills.map((skill) => (
                     <motion.span key={skill} initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.7 }}
-                      style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.3)", color: "#FB923C", padding: "6px 12px", borderRadius: "999px", fontSize: "13px" }}
+                      className="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-400 px-3 py-1.5 rounded-full text-xs font-medium"
                     >
                       {skill}
-                      <button onClick={() => removeSkill(skill)} style={{ background: "none", border: "none", cursor: "pointer", color: "#FB923C", display: "flex", alignItems: "center", padding: 0 }}>
+                      <button onClick={() => removeSkill(skill)} className="text-orange-500 hover:text-orange-700 dark:hover:text-orange-300 focus:outline-none flex items-center">
                         <X size={13} />
                       </button>
                     </motion.span>
@@ -372,11 +364,10 @@ const Profile = () => {
 
             {/* Save Button */}
             <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }} onClick={handleSave} disabled={saving}
-              style={{ width: "100%", backgroundColor: saved ? "#22C55E" : "#F97316", color: "white", padding: "14px", borderRadius: "14px", border: "none", fontSize: "15px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", transition: "background 0.3s", boxShadow: "0 4px 20px rgba(249,115,22,0.25)" }}
+              className={`w-full text-white p-3.5 rounded-xl text-base font-semibold flex items-center justify-center gap-2 transition-all shadow-md ${saved ? 'bg-green-500 hover:bg-green-600 shadow-green-500/25' : 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/25'}`}
             >
               {saving ? (
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid white", borderRadius: "50%" }} />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : saved ? (
                 <><CheckCircle size={18} /> Saved Successfully!</>
               ) : (

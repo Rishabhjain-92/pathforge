@@ -60,28 +60,28 @@ const Dashboard = () => {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+    <div className="flex flex-col gap-5">
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div className="flex items-center justify-between">
         <div>
-          <p style={{ color: "#9CA3AF", fontSize: "14px" }}>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             {new Date().toLocaleDateString("en-IN", {
               weekday: "long", day: "numeric",
               month: "long", year: "numeric"
             })}
           </p>
-          <h1 style={{ color: "white", fontSize: "24px", fontWeight: "700", marginTop: "4px" }}>
-            Welcome back, <span style={{ color: "#F97316" }}>{user?.name}</span> 👋
+          <h1 className="text-gray-900 dark:text-white text-2xl font-bold mt-1">
+            Welcome back, <span className="text-orange-500">{user?.name}</span> 👋
           </h1>
         </div>
-        <div style={{ fontSize: "14px", background: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.2)", color: "#FB923C", padding: "8px 16px", borderRadius: "10px" }}>
+        <div className="text-sm bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 px-4 py-2 rounded-xl">
           {profile?.targetRole || "Set target role"}
         </div>
       </div>
 
       {/* Stat Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((card, i) => (
           <motion.div
             key={card.label}
@@ -89,16 +89,15 @@ const Dashboard = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08 }}
             whileHover={{ scale: 1.02 }}
-            className={`bg-gray-900 border ${card.border} rounded-xl`}
-            style={{ padding: "20px" }}
+            className={`bg-white dark:bg-gray-900 border border-gray-200 dark:${card.border} rounded-xl p-5 shadow-sm dark:shadow-none`}
           >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-              <p style={{ color: "#9CA3AF", fontSize: "14px" }}>{card.label}</p>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{card.label}</p>
               <div className={`${card.bg} p-2 rounded-lg`}>
                 <card.icon size={18} className={card.color} />
               </div>
             </div>
-            <p className={card.color} style={{ fontSize: "20px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <p className={`${card.color} text-xl font-bold truncate`}>
               {card.value}
             </p>
           </motion.div>
@@ -106,48 +105,47 @@ const Dashboard = () => {
       </div>
 
       {/* Middle Row */}
-      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "16px" }}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
         {/* Roadmap Progress */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-gray-900 border border-gray-800 rounded-xl"
-          style={{ padding: "24px" }}
+          className="lg:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 shadow-sm dark:shadow-none"
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "20px" }}>
+          <div className="flex justify-between items-start mb-5">
             <div>
-              <h2 style={{ color: "white", fontSize: "18px", fontWeight: "600" }}>Roadmap Progress</h2>
-              <p style={{ color: "#6B7280", fontSize: "14px", marginTop: "4px" }}>Track your Dream Role journey</p>
+              <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Roadmap Progress</h2>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Track your Dream Role journey</p>
             </div>
-            <span style={{ color: "#6B7280", fontSize: "14px" }}>{profile?.roadmapProgress || 0}% completed</span>
+            <span className="text-gray-500 dark:text-gray-400 text-sm">{profile?.roadmapProgress || 0}% completed</span>
           </div>
 
-          <div style={{ marginBottom: "20px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-              <span style={{ color: "#9CA3AF", fontSize: "14px" }}>Overall Completion</span>
-              <span style={{ color: "#F97316", fontSize: "14px", fontWeight: "600" }}>{profile?.roadmapProgress || 0}%</span>
+          <div className="mb-5">
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-500 dark:text-gray-400 text-sm">Overall Completion</span>
+              <span className="text-orange-500 text-sm font-semibold">{profile?.roadmapProgress || 0}%</span>
             </div>
-            <div style={{ width: "100%", height: "8px", background: "#1F2937", borderRadius: "999px", overflow: "hidden" }}>
+            <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${profile?.roadmapProgress || 0}%` }}
                 transition={{ delay: 0.5, duration: 1 }}
-                style={{ height: "100%", background: "linear-gradient(to right, #EA580C, #FB923C)", borderRadius: "999px" }}
+                className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"
               />
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "20px" }}>
+          <div className="grid grid-cols-3 gap-3 mb-5">
             {[
-              { label: "Completed", value: "0", color: "#4ADE80", bg: "rgba(74,222,128,0.1)" },
-              { label: "In Progress", value: "0", color: "#FB923C", bg: "rgba(251,146,60,0.1)" },
-              { label: "Upcoming", value: "0", color: "#6B7280", bg: "rgba(107,114,128,0.1)" },
+              { label: "Completed", value: "0", textClass: "text-green-500", bgClass: "bg-green-50 dark:bg-green-500/10" },
+              { label: "In Progress", value: "0", textClass: "text-orange-500", bgClass: "bg-orange-50 dark:bg-orange-500/10" },
+              { label: "Upcoming", value: "0", textClass: "text-gray-500 dark:text-gray-400", bgClass: "bg-gray-50 dark:bg-gray-500/10" },
             ].map((s) => (
-              <div key={s.label} style={{ background: s.bg, borderRadius: "12px", padding: "16px", textAlign: "center" }}>
-                <p style={{ fontSize: "28px", fontWeight: "700", color: s.color }}>{s.value}</p>
-                <p style={{ fontSize: "13px", color: "#6B7280", marginTop: "4px" }}>{s.label}</p>
+              <div key={s.label} className={`${s.bgClass} rounded-xl p-4 text-center`}>
+                <p className={`${s.textClass} text-2xl md:text-3xl font-bold`}>{s.value}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm mt-1">{s.label}</p>
               </div>
             ))}
           </div>
@@ -156,7 +154,7 @@ const Dashboard = () => {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/roadmap")}
-            style={{ width: "100%", background: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.3)", color: "#FB923C", padding: "13px", borderRadius: "10px", fontSize: "15px", fontWeight: "500", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", cursor: "pointer" }}
+            className="w-full bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-400 p-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors hover:bg-orange-100 dark:hover:bg-orange-500/20"
           >
             <Zap size={16} />
             Generate Your Roadmap with AI
@@ -169,22 +167,21 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="bg-gray-900 border border-orange-500/20 rounded-xl"
-          style={{ padding: "24px" }}
+          className="bg-white dark:bg-gray-900 border border-orange-200 dark:border-orange-500/20 rounded-xl p-6 shadow-sm dark:shadow-none"
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+          <div className="flex items-center gap-2 mb-4">
             <Sparkles size={18} className="text-orange-500" />
-            <h2 style={{ color: "white", fontSize: "17px", fontWeight: "600" }}>AI Insights</h2>
+            <h2 className="text-gray-900 dark:text-white text-lg font-semibold">AI Insights</h2>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <div className="flex flex-col gap-3">
             {[
               "Complete your profile to unlock AI-powered recommendations.",
               "Upload your resume this week to receive ATS analysis.",
               "Your profile matches 0% of your target role requirements.",
             ].map((text, i) => (
-              <div key={i} style={{ background: "#1F2937", borderRadius: "10px", padding: "14px" }}>
-                <p style={{ color: "#D1D5DB", fontSize: "14px", lineHeight: "1.6" }}>{text}</p>
+              <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3.5 border border-gray-100 dark:border-transparent">
+                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{text}</p>
               </div>
             ))}
           </div>
@@ -192,29 +189,28 @@ const Dashboard = () => {
       </div>
 
       {/* Bottom Row */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         {/* Recent Activity */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-gray-900 border border-gray-800 rounded-xl"
-          style={{ padding: "24px" }}
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 shadow-sm dark:shadow-none"
         >
-          <h2 style={{ color: "white", fontSize: "17px", fontWeight: "600", marginBottom: "16px" }}>Recent Activity</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <h2 className="text-gray-900 dark:text-white text-lg font-semibold mb-4">Recent Activity</h2>
+          <div className="flex flex-col gap-3">
             {[
-              { icon: CheckCircle, text: "Profile updated", time: "Just now", color: "#4ADE80" },
-              { icon: Star, text: "Skills added to profile", time: "Today", color: "#FB923C" },
-              { icon: BookOpen, text: "Joined PathForge", time: `${getDaysOnPlatform()} day(s) ago`, color: "#60A5FA" },
-              { icon: Clock, text: "Resume not uploaded yet", time: "Pending", color: "#6B7280" },
+              { icon: CheckCircle, text: "Profile updated", time: "Just now", colorClass: "text-green-500" },
+              { icon: Star, text: "Skills added to profile", time: "Today", colorClass: "text-orange-500" },
+              { icon: BookOpen, text: "Joined PathForge", time: `${getDaysOnPlatform()} day(s) ago`, colorClass: "text-blue-500" },
+              { icon: Clock, text: "Resume not uploaded yet", time: "Pending", colorClass: "text-gray-500" },
             ].map((item, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: "12px", background: "#1F2937", borderRadius: "10px", padding: "14px" }}>
-                <item.icon size={18} style={{ color: item.color, flexShrink: 0 }} />
+              <div key={i} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-xl p-3.5 border border-gray-100 dark:border-transparent">
+                <item.icon size={18} className={`${item.colorClass} flex-shrink-0`} />
                 <div>
-                  <p style={{ color: "white", fontSize: "14px", fontWeight: "500" }}>{item.text}</p>
-                  <p style={{ color: "#6B7280", fontSize: "12px", marginTop: "3px" }}>{item.time}</p>
+                  <p className="text-gray-900 dark:text-white text-sm font-medium">{item.text}</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">{item.time}</p>
                 </div>
               </div>
             ))}
@@ -226,11 +222,10 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45 }}
-          className="bg-gray-900 border border-gray-800 rounded-xl"
-          style={{ padding: "24px" }}
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 shadow-sm dark:shadow-none flex flex-col"
         >
-          <h2 style={{ color: "white", fontSize: "17px", fontWeight: "600", marginBottom: "16px" }}>Recommended Next Steps</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+          <h2 className="text-gray-900 dark:text-white text-lg font-semibold mb-4">Recommended Next Steps</h2>
+          <div className="flex flex-col gap-2 mb-4 flex-grow">
             {[
               { text: "Complete System Design Course", path: "/recommendations" },
               { text: "Upload resume for AI analysis", path: "/resume" },
@@ -240,10 +235,10 @@ const Dashboard = () => {
               <div
                 key={i}
                 onClick={() => navigate(step.path)}
-                style={{ display: "flex", alignItems: "center", gap: "12px", background: "#1F2937", borderRadius: "10px", padding: "14px", cursor: "pointer" }}
+                className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl p-3.5 cursor-pointer transition-colors border border-gray-100 dark:border-transparent"
               >
-                <input type="checkbox" style={{ accentColor: "#F97316", width: "16px", height: "16px" }} onClick={(e) => e.stopPropagation()} />
-                <p style={{ color: "#D1D5DB", fontSize: "14px" }}>{step.text}</p>
+                <input type="checkbox" className="accent-orange-500 w-4 h-4 cursor-pointer" onClick={(e) => e.stopPropagation()} />
+                <p className="text-gray-700 dark:text-gray-300 text-sm">{step.text}</p>
               </div>
             ))}
           </div>
@@ -252,7 +247,7 @@ const Dashboard = () => {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/roadmap")}
-            style={{ width: "100%", background: "#F97316", color: "white", padding: "13px", borderRadius: "10px", fontSize: "15px", fontWeight: "500", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", cursor: "pointer", border: "none" }}
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors mt-auto shadow-md shadow-orange-500/20"
           >
             View Full Roadmap
             <ArrowRight size={16} />
@@ -266,21 +261,20 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-gray-900 border border-gray-800 rounded-xl"
-          style={{ padding: "20px" }}
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 shadow-sm dark:shadow-none"
         >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-            <h2 style={{ color: "white", fontSize: "16px", fontWeight: "600" }}>Your Skills</h2>
-            <button onClick={() => navigate("/profile")} style={{ color: "#F97316", fontSize: "14px", background: "none", border: "none", cursor: "pointer" }}>Edit →</button>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-gray-900 dark:text-white text-base font-semibold">Your Skills</h2>
+            <button onClick={() => navigate("/profile")} className="text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 text-sm font-medium transition-colors">Edit →</button>
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          <div className="flex flex-wrap gap-2">
             {profile.skills.map((skill, i) => (
               <motion.span
                 key={skill}
                 initial={{ opacity: 0, scale: 0.7 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.6 + i * 0.03 }}
-                style={{ background: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.3)", color: "#FB923C", padding: "5px 14px", borderRadius: "999px", fontSize: "13px" }}
+                className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-full text-xs font-medium"
               >
                 {skill}
               </motion.span>

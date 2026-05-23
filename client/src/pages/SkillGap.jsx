@@ -49,11 +49,11 @@ const SkillGap = () => {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
+      <div className="flex items-center justify-center h-[60vh]">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          style={{ width: "28px", height: "28px", border: "2px solid rgba(249,115,22,0.3)", borderTop: "2px solid #F97316", borderRadius: "50%" }}
+          className="w-7 h-7 border-2 border-orange-500/30 border-t-orange-500 rounded-full"
         />
       </div>
     );
@@ -61,10 +61,10 @@ const SkillGap = () => {
 
   if (error) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "60vh", gap: "16px" }}>
-        <AlertCircle size={40} color="#F87171" />
-        <p style={{ color: "#F87171", fontSize: "16px" }}>{error}</p>
-        <button onClick={fetchSkillGap} style={{ backgroundColor: "#F97316", color: "white", padding: "10px 20px", borderRadius: "10px", border: "none", cursor: "pointer", fontSize: "14px" }}>
+      <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+        <AlertCircle size={40} className="text-red-400" />
+        <p className="text-red-400 text-base">{error}</p>
+        <button onClick={fetchSkillGap} className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl transition-colors text-sm">
           Retry
         </button>
       </div>
@@ -78,38 +78,30 @@ const SkillGap = () => {
   const circumference = 2 * Math.PI * 52;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px", position: "relative" }}>
+    <div className="flex flex-col gap-5 relative">
+      <div className="fixed top-[150px] right-[150px] w-[300px] h-[300px] bg-orange-500/5 dark:bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Background glow */}
-      <div style={{ position: "fixed", top: "150px", right: "150px", width: "300px", height: "300px", background: "radial-gradient(circle, rgba(249,115,22,0.04) 0%, transparent 70%)", pointerEvents: "none" }} />
-
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 style={{ color: "white", fontSize: "22px", fontWeight: "700" }}>Skill Gap Analysis</h1>
-        <p style={{ color: "#6B7280", fontSize: "14px", marginTop: "4px" }}>
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
+        <h1 className="text-gray-900 dark:text-white text-2xl font-bold">Skill Gap Analysis</h1>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
           Compare your skills with {data.targetRole} requirements
           {data.targetCompany && ` at ${data.targetCompany}`}
         </p>
       </motion.div>
 
-      {/* Top Row — Score + Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "16px" }}>
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4">
 
-        {/* Readiness Score */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "28px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-7 flex flex-col items-center justify-center text-center shadow-sm dark:shadow-none"
         >
-          <p style={{ color: "#9CA3AF", fontSize: "12px", marginBottom: "20px", fontWeight: "500" }}>
-            Readiness Score
-          </p>
+          <p className="text-gray-500 dark:text-gray-400 text-xs mb-5 font-medium">Readiness Score</p>
 
-          {/* Big Circle */}
-          <div style={{ position: "relative", width: "130px", height: "130px" }}>
-            <svg width="130" height="130" style={{ transform: "rotate(-90deg)" }}>
-              <circle cx="65" cy="65" r="52" fill="none" stroke="#1F2937" strokeWidth="10" />
+          <div className="relative w-[130px] h-[130px]">
+            <svg width="130" height="130" className="-rotate-90">
+              <circle cx="65" cy="65" r="52" fill="none" className="stroke-gray-100 dark:stroke-gray-800" strokeWidth="10" />
               <motion.circle
                 cx="65" cy="65" r="52"
                 fill="none"
@@ -122,40 +114,39 @@ const SkillGap = () => {
                 transition={{ duration: 1.8, delay: 0.3, ease: "easeOut" }}
               />
             </svg>
-            <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
               <motion.span
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.8, type: "spring" }}
-                style={{ color: scoreColor, fontSize: "32px", fontWeight: "800", lineHeight: 1 }}
+                className="text-3xl font-extrabold leading-none" style={{ color: scoreColor }}
               >
                 {data.readinessScore}%
               </motion.span>
             </div>
           </div>
 
-          {/* Label */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            style={{ marginTop: "16px", backgroundColor: scoreLabel.bg, border: `1px solid ${scoreLabel.border}`, color: scoreLabel.color, padding: "5px 14px", borderRadius: "999px", fontSize: "12px", fontWeight: "700" }}
+            className="mt-4 px-3.5 py-1.5 rounded-full text-xs font-bold"
+            style={{ backgroundColor: scoreLabel.bg, border: `1px solid ${scoreLabel.border}`, color: scoreLabel.color }}
           >
             {scoreLabel.text}
           </motion.div>
 
-          <p style={{ color: "#6B7280", fontSize: "12px", marginTop: "10px" }}>
+          <p className="text-gray-500 dark:text-gray-400 text-xs mt-2.5">
             {data.totalMatched} of {data.totalRequired} skills matched
           </p>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", gap: "12px" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
-            { label: "Skills You Have", value: data.userSkills.length, color: "#60A5FA", bg: "rgba(96,165,250,0.1)", icon: CheckCircle },
-            { label: "Skills Matched", value: data.totalMatched, color: "#4ADE80", bg: "rgba(74,222,128,0.1)", icon: Target },
-            { label: "Skills Missing", value: data.missingSkills.length, color: "#F87171", bg: "rgba(248,113,113,0.1)", icon: XCircle },
-            { label: "Total Required", value: data.totalRequired, color: "#A78BFA", bg: "rgba(167,139,250,0.1)", icon: TrendingUp },
+            { label: "Skills You Have", value: data.userSkills.length, colorClass: "text-blue-500", bgClass: "bg-blue-50 dark:bg-blue-500/10", icon: CheckCircle },
+            { label: "Skills Matched", value: data.totalMatched, colorClass: "text-green-500", bgClass: "bg-green-50 dark:bg-green-500/10", icon: Target },
+            { label: "Skills Missing", value: data.missingSkills.length, colorClass: "text-red-500", bgClass: "bg-red-50 dark:bg-red-500/10", icon: XCircle },
+            { label: "Total Required", value: data.totalRequired, colorClass: "text-purple-500", bgClass: "bg-purple-50 dark:bg-purple-500/10", icon: TrendingUp },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -163,18 +154,18 @@ const SkillGap = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.08 }}
               whileHover={{ scale: 1.02 }}
-              style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "16px", padding: "20px", display: "flex", alignItems: "center", gap: "14px" }}
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 flex items-center gap-3.5 shadow-sm dark:shadow-none"
             >
-              <div style={{ width: "44px", height: "44px", backgroundColor: stat.bg, borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <stat.icon size={20} color={stat.color} />
+              <div className={`w-11 h-11 ${stat.bgClass} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                <stat.icon size={20} className={stat.colorClass} />
               </div>
               <div>
-                <p style={{ color: "#9CA3AF", fontSize: "12px" }}>{stat.label}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs">{stat.label}</p>
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 + i * 0.08 }}
-                  style={{ color: stat.color, fontSize: "24px", fontWeight: "800", marginTop: "2px" }}
+                  className={`${stat.colorClass} text-2xl font-extrabold mt-0.5`}
                 >
                   {stat.value}
                 </motion.p>
@@ -184,35 +175,33 @@ const SkillGap = () => {
         </div>
       </div>
 
-      {/* Skills Comparison */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+      <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        {/* Current Skills */}
         <motion.div
           initial={{ opacity: 0, x: -15 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "22px" }}
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5.5 shadow-sm dark:shadow-none"
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-            <div style={{ width: "32px", height: "32px", backgroundColor: "rgba(74,222,128,0.1)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <CheckCircle size={16} color="#4ADE80" />
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="w-8 h-8 bg-green-50 dark:bg-green-500/10 rounded-lg flex items-center justify-center">
+              <CheckCircle size={16} className="text-green-500" />
             </div>
-            <h3 style={{ color: "white", fontSize: "15px", fontWeight: "600" }}>
+            <h3 className="text-gray-900 dark:text-white text-sm font-semibold">
               Current Skills
             </h3>
-            <span style={{ marginLeft: "auto", backgroundColor: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.2)", color: "#4ADE80", padding: "2px 10px", borderRadius: "999px", fontSize: "12px" }}>
+            <span className="ml-auto bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-green-600 dark:text-green-500 px-2.5 py-0.5 rounded-full text-xs">
               {data.userSkills.length}
             </span>
           </div>
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          <div className="flex flex-wrap gap-2">
             {data.userSkills.length === 0 ? (
-              <p style={{ color: "#6B7280", fontSize: "13px" }}>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
                 No skills added yet.{" "}
                 <span
                   onClick={() => navigate("/profile")}
-                  style={{ color: "#F97316", cursor: "pointer" }}
+                  className="text-orange-500 cursor-pointer hover:underline"
                 >
                   Add skills in Profile →
                 </span>
@@ -228,18 +217,7 @@ const SkillGap = () => {
                     initial={{ opacity: 0, scale: 0.7 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.4 + i * 0.05 }}
-                    style={{
-                      backgroundColor: isMatched ? "rgba(74,222,128,0.1)" : "rgba(107,114,128,0.1)",
-                      border: `1px solid ${isMatched ? "rgba(74,222,128,0.3)" : "rgba(107,114,128,0.3)"}`,
-                      color: isMatched ? "#4ADE80" : "#9CA3AF",
-                      padding: "5px 12px",
-                      borderRadius: "999px",
-                      fontSize: "12px",
-                      fontWeight: "500",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "5px"
-                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${isMatched ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-green-600 dark:text-green-400" : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400"}`}
                   >
                     {isMatched && <CheckCircle size={11} />}
                     {skill}
@@ -250,26 +228,25 @@ const SkillGap = () => {
           </div>
         </motion.div>
 
-        {/* Required Skills */}
         <motion.div
           initial={{ opacity: 0, x: 15 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.35 }}
-          style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "22px" }}
+          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5.5 shadow-sm dark:shadow-none"
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-            <div style={{ width: "32px", height: "32px", backgroundColor: "rgba(249,115,22,0.1)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Target size={16} color="#F97316" />
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="w-8 h-8 bg-orange-50 dark:bg-orange-500/10 rounded-lg flex items-center justify-center">
+              <Target size={16} className="text-orange-500" />
             </div>
-            <h3 style={{ color: "white", fontSize: "15px", fontWeight: "600" }}>
+            <h3 className="text-gray-900 dark:text-white text-sm font-semibold">
               Required Skills
             </h3>
-            <span style={{ marginLeft: "auto", backgroundColor: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.2)", color: "#F97316", padding: "2px 10px", borderRadius: "999px", fontSize: "12px" }}>
+            <span className="ml-auto bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-500 px-2.5 py-0.5 rounded-full text-xs">
               {data.totalRequired}
             </span>
           </div>
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          <div className="flex flex-wrap gap-2">
             {data.requiredSkills.map((skill, i) => {
               const isMatched = data.matchedSkills
                 .map(s => s.toLowerCase())
@@ -280,18 +257,7 @@ const SkillGap = () => {
                   initial={{ opacity: 0, scale: 0.7 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.45 + i * 0.04 }}
-                  style={{
-                    backgroundColor: isMatched ? "rgba(74,222,128,0.1)" : "rgba(248,113,113,0.08)",
-                    border: `1px solid ${isMatched ? "rgba(74,222,128,0.3)" : "rgba(248,113,113,0.25)"}`,
-                    color: isMatched ? "#4ADE80" : "#F87171",
-                    padding: "5px 12px",
-                    borderRadius: "999px",
-                    fontSize: "12px",
-                    fontWeight: "500",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px"
-                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${isMatched ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/30 text-green-600 dark:text-green-400" : "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400"}`}
                 >
                   {isMatched ? <CheckCircle size={11} /> : <XCircle size={11} />}
                   {skill}
@@ -302,27 +268,26 @@ const SkillGap = () => {
         </motion.div>
       </div>
 
-      {/* Missing Skills — Priority List */}
       {data.missingSkills.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "22px" }}
+          className="relative z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5.5 shadow-sm dark:shadow-none"
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "18px" }}>
-            <div style={{ width: "32px", height: "32px", backgroundColor: "rgba(248,113,113,0.1)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <XCircle size={16} color="#F87171" />
+          <div className="flex items-center gap-2.5 mb-4.5">
+            <div className="w-8 h-8 bg-red-50 dark:bg-red-500/10 rounded-lg flex items-center justify-center">
+              <XCircle size={16} className="text-red-500" />
             </div>
-            <h3 style={{ color: "white", fontSize: "15px", fontWeight: "600" }}>
+            <h3 className="text-gray-900 dark:text-white text-sm font-semibold">
               Skills to Learn
             </h3>
-            <span style={{ color: "#6B7280", fontSize: "13px", marginLeft: "4px" }}>
+            <span className="text-gray-500 dark:text-gray-400 text-xs ml-1">
               — Priority order
             </span>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" }}>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
             {data.missingSkills.map((skill, i) => (
               <motion.div
                 key={skill}
@@ -330,52 +295,51 @@ const SkillGap = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55 + i * 0.06 }}
                 whileHover={{ x: 4 }}
-                style={{ display: "flex", alignItems: "center", gap: "12px", backgroundColor: "#1F2937", borderRadius: "12px", padding: "12px 14px" }}
+                className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-xl p-3 border border-gray-100 dark:border-transparent"
               >
-                <div style={{ width: "24px", height: "24px", backgroundColor: "rgba(248,113,113,0.15)", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span style={{ color: "#F87171", fontSize: "11px", fontWeight: "700" }}>
+                <div className="w-6 h-6 bg-red-50 dark:bg-red-500/10 rounded-md flex items-center justify-center flex-shrink-0">
+                  <span className="text-red-500 text-[11px] font-bold">
                     {i + 1}
                   </span>
                 </div>
-                <span style={{ color: "#D1D5DB", fontSize: "13px", fontWeight: "500" }}>{skill}</span>
+                <span className="text-gray-700 dark:text-gray-300 text-sm font-medium">{skill}</span>
               </motion.div>
             ))}
           </div>
         </motion.div>
       )}
 
-      {/* Progress Bar — Visual */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "22px" }}
+        className="relative z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5.5 shadow-sm dark:shadow-none"
       >
-        <h3 style={{ color: "white", fontSize: "15px", fontWeight: "600", marginBottom: "16px" }}>
+        <h3 className="text-gray-900 dark:text-white text-sm font-semibold mb-4">
           Skill Match Visualization
         </h3>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className="flex flex-col gap-2.5">
           {data.requiredSkills.map((skill, i) => {
             const isMatched = data.matchedSkills
               .map(s => s.toLowerCase())
               .includes(skill.toLowerCase());
             return (
               <div key={skill}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
-                  <span style={{ color: isMatched ? "#D1D5DB" : "#6B7280", fontSize: "12px" }}>
+                <div className="flex justify-between mb-1.5">
+                  <span className={`text-xs ${isMatched ? "text-gray-700 dark:text-gray-300" : "text-gray-500 dark:text-gray-400"}`}>
                     {skill}
                   </span>
-                  <span style={{ color: isMatched ? "#4ADE80" : "#F87171", fontSize: "12px", fontWeight: "600" }}>
+                  <span className={`text-xs font-semibold ${isMatched ? "text-green-500" : "text-red-500"}`}>
                     {isMatched ? "✓ Matched" : "✗ Missing"}
                   </span>
                 </div>
-                <div style={{ width: "100%", height: "5px", backgroundColor: "#1F2937", borderRadius: "999px", overflow: "hidden" }}>
+                <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: isMatched ? "100%" : "0%" }}
                     transition={{ duration: 0.8, delay: 0.7 + i * 0.04 }}
-                    style={{ height: "100%", backgroundColor: isMatched ? "#4ADE80" : "#F87171", borderRadius: "999px" }}
+                    className={`h-full rounded-full ${isMatched ? "bg-green-500" : "bg-red-500"}`}
                   />
                 </div>
               </div>
@@ -384,18 +348,17 @@ const SkillGap = () => {
         </div>
       </motion.div>
 
-      {/* CTA */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}
+        className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-3"
       >
         <motion.button
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.97 }}
           onClick={() => navigate("/roadmap")}
-          style={{ backgroundColor: "#F97316", color: "white", padding: "14px", borderRadius: "14px", border: "none", fontSize: "14px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 4px 20px rgba(249,115,22,0.25)" }}
+          className="bg-orange-500 hover:bg-orange-600 text-white p-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-orange-500/20 transition-colors"
         >
           <Zap size={16} />
           Generate Roadmap to Fill Gaps
@@ -406,7 +369,7 @@ const SkillGap = () => {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.97 }}
           onClick={() => navigate("/profile")}
-          style={{ backgroundColor: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.3)", color: "#F97316", padding: "14px", borderRadius: "14px", fontSize: "14px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+          className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-500 hover:bg-orange-100 dark:hover:bg-orange-500/20 p-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
         >
           <BookOpen size={16} />
           Update My Skills

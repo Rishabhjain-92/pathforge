@@ -55,7 +55,7 @@ const About = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white overflow-x-hidden transition-colors duration-300">
 
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
@@ -111,7 +111,7 @@ const About = () => {
               PathForge
             </span>
           </h1>
-          <p className="text-gray-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
             PathForge was built to solve a problem every engineering student faces —
             knowing WHAT to learn but never knowing HOW to get there.
           </p>
@@ -131,13 +131,13 @@ const About = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 + i * 0.1, type: "spring" }}
               whileHover={{ scale: 1.05, y: -4 }}
-              className="bg-gray-900/80 border border-gray-800/70 rounded-2xl p-5 text-center backdrop-blur-sm"
+              className="bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800/70 rounded-2xl p-5 text-center backdrop-blur-sm shadow-sm dark:shadow-none"
             >
               <div className="flex justify-center mb-2">
                 <stat.icon size={20} className={stat.color} />
               </div>
               <p className={`text-2xl font-black ${stat.color}`}>{stat.value}</p>
-              <p className="text-gray-500 text-sm mt-1">{stat.label}</p>
+              <p className="text-gray-600 dark:text-gray-500 text-sm mt-1">{stat.label}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -151,7 +151,7 @@ const About = () => {
           className="relative mb-10"
         >
           <div className="absolute -inset-px rounded-3xl bg-gradient-to-r from-orange-500/20 via-amber-400/10 to-orange-500/20 blur-sm" />
-          <div className="relative bg-gray-900/90 border border-orange-500/20 rounded-3xl p-8 md:p-10 backdrop-blur-xl overflow-hidden">
+          <div className="relative bg-white/90 dark:bg-gray-900/90 border border-orange-200 dark:border-orange-500/20 rounded-3xl p-8 md:p-10 backdrop-blur-xl overflow-hidden shadow-xl dark:shadow-none">
             {/* Inner decorations */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
             <motion.div
@@ -165,10 +165,10 @@ const About = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-400 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
                   <Target size={20} className="text-white" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black text-white">The Problem We Solve</h2>
+                <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white">The Problem We Solve</h2>
               </div>
 
-              <p className="text-gray-400 leading-relaxed mb-6 text-lg">
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6 text-lg">
                 Platforms like LinkedIn tell you what skills you need. Internshala shows you
                 internships. Coursera shows you courses. But nobody tells you:
               </p>
@@ -183,7 +183,7 @@ const About = () => {
                 </p>
               </motion.div>
 
-              <p className="text-gray-400 leading-relaxed text-lg">
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
                 PathForge answers that question with AI-powered personalized roadmaps,
                 skill gap analysis, and weekly recalibration — so you always know
                 exactly what to do next.
@@ -199,7 +199,7 @@ const About = () => {
           viewport={{ once: true }}
           className="mb-10"
         >
-          <h2 className="text-3xl font-black text-white text-center mb-8">
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white text-center mb-8">
             Our{" "}
             <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
               Values
@@ -214,7 +214,7 @@ const About = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
                 whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                className={`group relative bg-gradient-to-br ${value.bg} bg-gray-900 border ${value.border} rounded-2xl p-6 text-center overflow-hidden cursor-default`}
+                className={`group relative bg-gradient-to-br ${value.bg} bg-white dark:bg-gray-900 border ${value.border} rounded-2xl p-6 text-center overflow-hidden cursor-default shadow-sm dark:shadow-none`}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 <motion.div
@@ -224,8 +224,8 @@ const About = () => {
                 >
                   <value.icon size={24} className="text-white" />
                 </motion.div>
-                <h3 className="text-white font-bold text-lg mb-2">{value.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{value.desc}</p>
+                <h3 className="text-gray-900 dark:text-white font-bold text-lg mb-2 relative z-10">{value.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed relative z-10">{value.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -236,13 +236,13 @@ const About = () => {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-gray-900/80 border border-gray-800/70 rounded-3xl p-8 mb-10 backdrop-blur-sm"
+          className="bg-white/80 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800/70 rounded-3xl p-8 mb-10 backdrop-blur-sm shadow-sm dark:shadow-none"
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl flex items-center justify-center shadow-lg">
               <Code size={20} className="text-white" />
             </div>
-            <h2 className="text-2xl font-black text-white">Built With</h2>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white">Built With</h2>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -269,7 +269,7 @@ const About = () => {
           viewport={{ once: true }}
           className="mb-14"
         >
-          <h2 className="text-3xl font-black text-white text-center mb-10">
+          <h2 className="text-3xl font-black text-gray-900 dark:text-white text-center mb-10">
             The{" "}
             <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
               Journey
@@ -293,11 +293,11 @@ const About = () => {
                 transition={{ delay: i * 0.15 }}
                 className="relative pl-16 pb-8 last:pb-0"
               >
-                <div className={`absolute left-4 top-1 w-4 h-4 ${item.color} rounded-full border-2 border-gray-950 shadow-lg -translate-x-1/2`} />
-                <div className="bg-gray-900/60 border border-gray-800/60 rounded-2xl p-5 hover:border-gray-700 transition-all duration-300">
-                  <span className="text-orange-400 text-xs font-semibold uppercase tracking-wider">{item.date}</span>
-                  <h3 className="text-white font-bold text-lg mt-1 mb-1">{item.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
+                <div className={`absolute left-4 top-1 w-4 h-4 ${item.color} rounded-full border-2 border-white dark:border-gray-950 shadow-lg -translate-x-1/2`} />
+                <div className="bg-white/80 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800/60 rounded-2xl p-5 hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-300 shadow-sm dark:shadow-none">
+                  <span className="text-orange-500 dark:text-orange-400 text-xs font-semibold uppercase tracking-wider">{item.date}</span>
+                  <h3 className="text-gray-900 dark:text-white font-bold text-lg mt-1 mb-1">{item.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -334,17 +334,17 @@ const About = () => {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800/60 py-10 px-6 relative z-10 mt-10">
+      <footer className="border-t border-gray-200 dark:border-gray-800/60 py-10 px-6 relative z-10 mt-10 bg-white/50 dark:bg-transparent backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
            {/* Logo */}
                          <Link to="/" className="flex items-center gap-2.5">
                            <img src={logo} alt="PathForge" className="w-8 h-8" />
-                           <span className="text-white font-bold text-lg">PathForge</span>
+                           <span className="text-gray-900 dark:text-white font-bold text-lg">PathForge</span>
                          </Link>
           
-          <div className="flex items-center gap-6 text-sm text-gray-400">
+          <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
             {["Home", "About", "Contact", "Login"].map((item) => (
-              <Link key={item} to={item === "Home" ? "/" : `/${item.toLowerCase()}`} className="hover:text-white transition-colors duration-200">
+              <Link key={item} to={item === "Home" ? "/" : `/${item.toLowerCase()}`} className="hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                 {item}
               </Link>
             ))}

@@ -154,13 +154,12 @@ const Resume = () => {
   const circumference = 2 * Math.PI * 36;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px", position: "relative" }}>
+    <div className="flex flex-col gap-5 relative">
+      <div className="fixed top-[100px] right-[100px] w-[300px] h-[300px] bg-orange-500/5 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none z-0" />
 
-      <div style={{ position: "fixed", top: "100px", right: "100px", width: "300px", height: "300px", background: "radial-gradient(circle, rgba(249,115,22,0.05) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
-
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 style={{ color: "white", fontSize: "22px", fontWeight: "700" }}>Resume Analysis</h1>
-        <p style={{ color: "#6B7280", fontSize: "14px", marginTop: "4px" }}>
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="relative z-10">
+        <h1 className="text-gray-900 dark:text-white text-2xl font-bold">Resume Analysis</h1>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
           Upload your resume for AI-powered analysis and ATS scoring
         </p>
       </motion.div>
@@ -168,50 +167,50 @@ const Resume = () => {
       <AnimatePresence>
         {success && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", color: "#4ADE80", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}>
+            className="relative z-10 flex items-center gap-2.5 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 text-green-600 dark:text-green-400 px-4 py-3 rounded-xl text-sm">
             <CheckCircle size={16} />{success}
           </motion.div>
         )}
         {error && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#F87171", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}>
+            className="relative z-10 flex items-center gap-2.5 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl text-sm">
             <AlertCircle size={16} />{error}
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="relative z-10">
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           onClick={() => fileRef.current?.click()}
-          style={{ border: `2px dashed ${dragOver ? "#F97316" : "#374151"}`, borderRadius: "20px", padding: "40px 24px", textAlign: "center", cursor: "pointer", backgroundColor: dragOver ? "rgba(249,115,22,0.05)" : "#111827", transition: "all 0.3s" }}
+          className={`border-2 border-dashed rounded-2xl py-10 px-6 text-center cursor-pointer transition-all ${dragOver ? "border-orange-500 bg-orange-50 dark:bg-orange-500/5" : "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900"} hover:border-orange-500`}
         >
-          <input ref={fileRef} type="file" accept=".pdf,.docx" style={{ display: "none" }}
+          <input ref={fileRef} type="file" accept=".pdf,.docx" className="hidden"
             onChange={(e) => handleUpload(e.target.files[0])} />
 
           {uploading ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
+            <div className="flex flex-col items-center gap-4">
               <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                style={{ width: "48px", height: "48px", border: "3px solid rgba(249,115,22,0.3)", borderTop: "3px solid #F97316", borderRadius: "50%" }} />
-              <p style={{ color: "#F97316", fontSize: "16px", fontWeight: "600" }}>Uploading & Extracting Skills...</p>
+                className="w-12 h-12 border-4 border-orange-500/30 border-t-orange-500 rounded-full" />
+              <p className="text-orange-500 text-base font-semibold">Uploading & Extracting Skills...</p>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+            <div className="flex flex-col items-center gap-3">
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 2, repeat: Infinity }}
-                style={{ width: "60px", height: "60px", backgroundColor: "rgba(249,115,22,0.1)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Upload size={26} color="#F97316" />
+                className="w-16 h-16 bg-orange-50 dark:bg-orange-500/10 rounded-2xl flex items-center justify-center">
+                <Upload size={26} className="text-orange-500" />
               </motion.div>
               <div>
-                <p style={{ color: "white", fontSize: "17px", fontWeight: "600" }}>
+                <p className="text-gray-900 dark:text-white text-lg font-semibold">
                   {resume?.hasResume ? "Upload New Resume" : "Drop your resume here"}
                 </p>
-                <p style={{ color: "#6B7280", fontSize: "13px", marginTop: "4px" }}>
-                  or <span style={{ color: "#F97316" }}>click to browse</span>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                  or <span className="text-orange-500">click to browse</span>
                 </p>
               </div>
-              <p style={{ color: "#4B5563", fontSize: "12px" }}>PDF and DOCX • Max 5MB</p>
+              <p className="text-gray-400 dark:text-gray-500 text-xs">PDF and DOCX • Max 5MB</p>
             </div>
           )}
         </div>
@@ -220,20 +219,20 @@ const Resume = () => {
       <AnimatePresence>
         {resume?.hasResume && (
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "14px" }}>
+            className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-3.5">
             {[
-              { icon: FileText, label: "Resume File", value: resume.fileName, color: "#F97316", bg: "rgba(249,115,22,0.1)" },
-              { icon: CheckCircle, label: "Uploaded On", value: formatDate(resume.uploadedAt), color: "#60A5FA", bg: "rgba(96,165,250,0.1)" },
-              { icon: ExternalLink, label: "View Resume", value: "Open File →", color: "#4ADE80", bg: "rgba(74,222,128,0.1)", onClick: () => window.open(resume.url, "_blank") },
+              { icon: FileText, label: "Resume File", value: resume.fileName, colorClass: "text-orange-500", bgClass: "bg-orange-50 dark:bg-orange-500/10" },
+              { icon: CheckCircle, label: "Uploaded On", value: formatDate(resume.uploadedAt), colorClass: "text-blue-500", bgClass: "bg-blue-50 dark:bg-blue-500/10" },
+              { icon: ExternalLink, label: "View Resume", value: "Open File →", colorClass: "text-green-500", bgClass: "bg-green-50 dark:bg-green-500/10", onClick: () => window.open(resume.url, "_blank") },
             ].map((card) => (
               <motion.div key={card.label} whileHover={{ scale: 1.02, y: -2 }} onClick={card.onClick}
-                style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "16px", padding: "18px", display: "flex", alignItems: "center", gap: "14px", cursor: card.onClick ? "pointer" : "default" }}>
-                <div style={{ width: "44px", height: "44px", backgroundColor: card.bg, borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <card.icon size={20} color={card.color} />
+                className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-4.5 flex items-center gap-3.5 ${card.onClick ? 'cursor-pointer hover:border-orange-200 dark:hover:border-gray-700' : ''}`}>
+                <div className={`w-11 h-11 ${card.bgClass} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                  <card.icon size={20} className={card.colorClass} />
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ color: "#9CA3AF", fontSize: "12px" }}>{card.label}</p>
-                  <p style={{ color: card.onClick ? card.color : "white", fontSize: "13px", fontWeight: "600", marginTop: "3px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-500 dark:text-gray-400 text-xs">{card.label}</p>
+                  <p className={`${card.onClick ? card.colorClass : "text-gray-900 dark:text-white"} text-sm font-semibold mt-1 truncate`}>
                     {card.value}
                   </p>
                 </div>
@@ -247,11 +246,11 @@ const Resume = () => {
         <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
           onClick={handleAnalyze} disabled={analyzing}
-          style={{ width: "100%", background: "linear-gradient(135deg, #F97316, #EA580C)", color: "white", padding: "14px", borderRadius: "14px", border: "none", fontSize: "15px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 4px 20px rgba(249,115,22,0.3)" }}>
+          className="relative z-10 w-full bg-gradient-to-br from-orange-500 to-orange-600 text-white p-3.5 rounded-2xl text-base font-semibold flex items-center justify-center gap-2 shadow-lg shadow-orange-500/30">
           {analyzing ? (
             <>
               <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid white", borderRadius: "50%" }} />
+                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
               Analyzing with AI...
             </>
           ) : <><Zap size={18} />Analyze Resume with AI</>}
@@ -261,68 +260,68 @@ const Resume = () => {
       <AnimatePresence>
         {analysis && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            className="relative z-10 flex flex-col gap-4">
 
-            <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "14px" }}>
-              <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
-                <p style={{ color: "#9CA3AF", fontSize: "12px", marginBottom: "16px" }}>ATS Score</p>
-                <div style={{ position: "relative", width: "100px", height: "100px" }}>
-                  <svg width="100" height="100" style={{ transform: "rotate(-90deg)" }}>
-                    <circle cx="50" cy="50" r="36" fill="none" stroke="#1F2937" strokeWidth="8" />
+            <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-3.5">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
+                <p className="text-gray-500 dark:text-gray-400 text-xs mb-4">ATS Score</p>
+                <div className="relative w-[100px] h-[100px]">
+                  <svg width="100" height="100" className="-rotate-90">
+                    <circle cx="50" cy="50" r="36" fill="none" className="stroke-gray-100 dark:stroke-gray-800" strokeWidth="8" />
                     <motion.circle cx="50" cy="50" r="36" fill="none" stroke={scoreColor} strokeWidth="8" strokeLinecap="round"
                       strokeDasharray={circumference}
                       initial={{ strokeDashoffset: circumference }}
                       animate={{ strokeDashoffset: circumference - (analysis.atsScore / 100) * circumference }}
                       transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }} />
                   </svg>
-                  <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-                      style={{ color: scoreColor, fontSize: "22px", fontWeight: "800", lineHeight: 1 }}>
+                      className="text-[22px] font-extrabold leading-none" style={{ color: scoreColor }}>
                       {analysis.atsScore}
                     </motion.span>
-                    <span style={{ color: "#6B7280", fontSize: "11px" }}>/100</span>
+                    <span className="text-gray-500 dark:text-gray-400 text-[11px]">/100</span>
                   </div>
                 </div>
-                <div style={{ marginTop: "14px", backgroundColor: verdictStyle.bg, border: `1px solid ${verdictStyle.border}`, color: verdictStyle.color, padding: "4px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: "700" }}>
+                <div className="mt-3.5 px-3 py-1 rounded-full text-[11px] font-bold" style={{ backgroundColor: verdictStyle.bg, border: `1px solid ${verdictStyle.border}`, color: verdictStyle.color }}>
                   {analysis.verdict}
                 </div>
-                <p style={{ color: "#6B7280", fontSize: "12px", marginTop: "8px" }}>{analysis.experienceLevel}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">{analysis.experienceLevel}</p>
               </div>
 
-              <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "24px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-                  <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(249,115,22,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Star size={14} color="#F97316" />
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-7 h-7 bg-orange-50 dark:bg-orange-500/10 rounded-lg flex items-center justify-center">
+                    <Star size={14} className="text-orange-500" />
                   </div>
-                  <h3 style={{ color: "white", fontSize: "15px", fontWeight: "600" }}>AI Summary</h3>
+                  <h3 className="text-gray-900 dark:text-white text-sm font-semibold">AI Summary</h3>
                 </div>
-                <p style={{ color: "#D1D5DB", fontSize: "14px", lineHeight: "1.7", marginBottom: "16px" }}>{analysis.summary}</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-4">{analysis.summary}</p>
 
                 {analysis.scoreBreakdown && (
                   <div>
                     <button onClick={() => setShowBreakdown(!showBreakdown)}
-                      style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.2)", color: "#F97316", padding: "6px 14px", borderRadius: "8px", fontSize: "12px", fontWeight: "600", cursor: "pointer" }}>
+                      className="flex items-center gap-1.5 bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-500 px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
                       {showBreakdown ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                       Score Breakdown
                     </button>
                     <AnimatePresence>
                       {showBreakdown && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-                          style={{ overflow: "hidden", marginTop: "12px" }}>
-                          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                          className="overflow-hidden mt-3">
+                          <div className="flex flex-col gap-2">
                             {Object.entries(analysis.scoreBreakdown).map(([key, val]) => {
                               const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
                               const pct = (val / 20) * 100;
                               const col = pct >= 75 ? "#4ADE80" : pct >= 50 ? "#FB923C" : "#F87171";
                               return (
                                 <div key={key}>
-                                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                                    <span style={{ color: "#9CA3AF", fontSize: "12px" }}>{label}</span>
-                                    <span style={{ color: col, fontSize: "12px", fontWeight: "600" }}>{val}/20</span>
+                                  <div className="flex justify-between mb-1">
+                                    <span className="text-gray-500 dark:text-gray-400 text-xs">{label}</span>
+                                    <span className="text-xs font-semibold" style={{ color: col }}>{val}/20</span>
                                   </div>
-                                  <div style={{ width: "100%", height: "5px", backgroundColor: "#1F2937", borderRadius: "999px", overflow: "hidden" }}>
+                                  <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                     <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
-                                      style={{ height: "100%", backgroundColor: col, borderRadius: "999px" }} />
+                                      className="h-full rounded-full" style={{ backgroundColor: col }} />
                                   </div>
                                 </div>
                               );
@@ -336,35 +335,35 @@ const Resume = () => {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-              <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-                  <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(74,222,128,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <TrendingUp size={14} color="#4ADE80" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-3.5">
+                  <div className="w-7 h-7 bg-green-50 dark:bg-green-500/10 rounded-lg flex items-center justify-center">
+                    <TrendingUp size={14} className="text-green-500" />
                   </div>
-                  <h3 style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>Top Skills Found</h3>
+                  <h3 className="text-gray-900 dark:text-white text-sm font-semibold">Top Skills Found</h3>
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                <div className="flex flex-wrap gap-2">
                   {analysis.topSkills?.map((skill, i) => (
                     <motion.span key={skill} initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
-                      style={{ backgroundColor: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.3)", color: "#4ADE80", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "500" }}>
+                      className="bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 text-green-600 dark:text-green-400 px-3 py-1 rounded-full text-xs font-medium">
                       {skill}
                     </motion.span>
                   ))}
                 </div>
               </div>
 
-              <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-                  <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(248,113,113,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <AlertCircle size={14} color="#F87171" />
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-3.5">
+                  <div className="w-7 h-7 bg-red-50 dark:bg-red-500/10 rounded-lg flex items-center justify-center">
+                    <AlertCircle size={14} className="text-red-500" />
                   </div>
-                  <h3 style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>Missing Skills</h3>
+                  <h3 className="text-gray-900 dark:text-white text-sm font-semibold">Missing Skills</h3>
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                <div className="flex flex-wrap gap-2">
                   {analysis.missingSkills?.map((skill, i) => (
                     <motion.span key={skill} initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
-                      style={{ backgroundColor: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", color: "#F87171", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "500" }}>
+                      className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-600 dark:text-red-400 px-3 py-1 rounded-full text-xs font-medium">
                       {skill}
                     </motion.span>
                   ))}
@@ -372,38 +371,38 @@ const Resume = () => {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-              <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-                  <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(96,165,250,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Award size={14} color="#60A5FA" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-3.5">
+                  <div className="w-7 h-7 bg-blue-50 dark:bg-blue-500/10 rounded-lg flex items-center justify-center">
+                    <Award size={14} className="text-blue-500" />
                   </div>
-                  <h3 style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>Strengths</h3>
+                  <h3 className="text-gray-900 dark:text-white text-sm font-semibold">Strengths</h3>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div className="flex flex-col gap-2">
                   {analysis.strengths?.map((s, i) => (
                     <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                      style={{ display: "flex", alignItems: "flex-start", gap: "10px", backgroundColor: "#1F2937", borderRadius: "10px", padding: "10px 12px" }}>
-                      <div style={{ width: "6px", height: "6px", backgroundColor: "#60A5FA", borderRadius: "50%", marginTop: "6px", flexShrink: 0 }} />
-                      <p style={{ color: "#D1D5DB", fontSize: "13px", lineHeight: "1.5" }}>{s}</p>
+                      className="flex items-start gap-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl px-3 py-2.5">
+                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 flex-shrink-0" />
+                      <p className="text-gray-700 dark:text-gray-300 text-xs leading-relaxed">{s}</p>
                     </motion.div>
                   ))}
                 </div>
               </div>
 
-              <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-                  <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(251,191,36,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Target size={14} color="#FBBF24" />
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-3.5">
+                  <div className="w-7 h-7 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg flex items-center justify-center">
+                    <Target size={14} className="text-yellow-500" />
                   </div>
-                  <h3 style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>Improvements</h3>
+                  <h3 className="text-gray-900 dark:text-white text-sm font-semibold">Improvements</h3>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div className="flex flex-col gap-2">
                   {analysis.improvements?.map((imp, i) => (
                     <motion.div key={i} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                      style={{ display: "flex", alignItems: "flex-start", gap: "10px", backgroundColor: "#1F2937", borderRadius: "10px", padding: "10px 12px" }}>
-                      <div style={{ width: "6px", height: "6px", backgroundColor: "#FBBF24", borderRadius: "50%", marginTop: "6px", flexShrink: 0 }} />
-                      <p style={{ color: "#D1D5DB", fontSize: "13px", lineHeight: "1.5" }}>{imp}</p>
+                      className="flex items-start gap-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl px-3 py-2.5">
+                      <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-1.5 flex-shrink-0" />
+                      <p className="text-gray-700 dark:text-gray-300 text-xs leading-relaxed">{imp}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -411,17 +410,17 @@ const Resume = () => {
             </div>
 
             {analysis.keywords?.length > 0 && (
-              <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-                  <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(167,139,250,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Zap size={14} color="#A78BFA" />
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-3.5">
+                  <div className="w-7 h-7 bg-purple-50 dark:bg-purple-500/10 rounded-lg flex items-center justify-center">
+                    <Zap size={14} className="text-purple-500" />
                   </div>
-                  <h3 style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>Missing ATS Keywords</h3>
+                  <h3 className="text-gray-900 dark:text-white text-sm font-semibold">Missing ATS Keywords</h3>
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                <div className="flex flex-wrap gap-2">
                   {analysis.keywords.map((kw, i) => (
                     <motion.span key={kw} initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
-                      style={{ backgroundColor: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.3)", color: "#A78BFA", padding: "5px 12px", borderRadius: "999px", fontSize: "12px" }}>
+                      className="bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/30 text-purple-600 dark:text-purple-400 px-3 py-1 rounded-full text-xs">
                       {kw}
                     </motion.span>
                   ))}
@@ -431,10 +430,10 @@ const Resume = () => {
 
             <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
               onClick={handleAnalyze} disabled={analyzing}
-              style={{ width: "100%", backgroundColor: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.3)", color: "#F97316", padding: "12px", borderRadius: "14px", fontSize: "14px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+              className="w-full bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-500 p-3 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors hover:bg-orange-100 dark:hover:bg-orange-500/20">
               {analyzing ? (
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  style={{ width: "18px", height: "18px", border: "2px solid rgba(249,115,22,0.3)", borderTop: "2px solid #F97316", borderRadius: "50%" }} />
+                  className="w-4.5 h-4.5 border-2 border-orange-500/30 border-t-orange-500 rounded-full" />
               ) : <Zap size={16} />}
               {analyzing ? "Re-analyzing..." : "Re-analyze Resume"}
             </motion.button>
@@ -445,10 +444,10 @@ const Resume = () => {
 
       {!resume?.hasResume && !uploading && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-          style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "16px", padding: "32px", textAlign: "center" }}>
-          <div style={{ fontSize: "48px", marginBottom: "12px" }}>📄</div>
-          <p style={{ color: "white", fontSize: "16px", fontWeight: "600" }}>No resume uploaded yet</p>
-          <p style={{ color: "#6B7280", fontSize: "13px", marginTop: "6px" }}>
+          className="relative z-10 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-8 text-center shadow-sm dark:shadow-none">
+          <div className="text-5xl mb-3">📄</div>
+          <p className="text-gray-900 dark:text-white text-base font-semibold">No resume uploaded yet</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1.5">
             Upload your resume above to get started with AI analysis
           </p>
         </motion.div>
