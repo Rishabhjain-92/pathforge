@@ -549,3 +549,23 @@ Respond ONLY with a valid JSON object, no markdown, no backticks:
   "topSkills": ["<actual strong skills found in resume>"],
   "verdict": "<STRONG PASS / PASS / BORDERLINE / FAIL / STRONG FAIL>"
 }`;
+
+## Day 8 — May 23, 2026
+**Focus:** AI Integration + Resume Analysis
+
+### Done
+- Groq API integrated (free + fast)
+- llama-3.3-70b-versatile model
+- Resume analysis working
+- ATS Score with circle animation
+- Score breakdown with progress bars
+- Top Skills, Missing Skills
+- Strengths, Improvements
+- Missing ATS Keywords
+- Verdict: STRONG PASS / PASS / BORDERLINE / FAIL
+
+### What I Learned
+- Groq API is faster than Gemini
+- Prompt engineering for structured JSON
+- SVG circle animation for score
+- AnimatePresence for conditional rendering

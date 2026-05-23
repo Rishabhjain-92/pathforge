@@ -8,6 +8,8 @@ const User = require("./models/User");
 const userRoutes = require("./routes/userRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
 const aiRoutes = require("./routes/aiRoutes");
+const skillGapRoutes = require("./routes/skillGapRoutes");
+
 dotenv.config();
 
 connectDB();
@@ -34,3 +36,4 @@ app.listen(PORT, () => {
 app.use("/api/resume", resumeRoutes);
 
 app.use("/api/ai", aiRoutes);
+app.use("/api/skill-gap", skillGapRoutes);
