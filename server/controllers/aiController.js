@@ -9,33 +9,54 @@ const analyzeResume = async (req, res) => {
     }
 
 const prompt = `
-You are an ATS system and Senior HR Manager with 15+ years at top tech companies.
+You are a STRICT ATS system used by Google, Amazon, and top tech companies.
+Your job is to CRITICALLY evaluate resumes. Be HARSH and HONEST.
 
 Resume Text:
 ${user.resumeText}
 
 Target Role: ${user.targetRole || "Software Engineer"}
-Target Company: ${user.targetCompany || "Tech Company"}
+Target Company: ${user.targetCompany || "Top Tech Company"}
 
-STEP 1 — EVALUATE these 5 factors individually first (internal reasoning):
-1. Relevant Experience (0-20): Does experience match the target role?
-2. Technical Skills (0-20): Are the right skills present and strong?
-3. Achievements & Metrics (0-20): Are results quantified? (e.g. "increased sales by 30%")
-4. Resume Formatting & Clarity (0-20): Is it clean, readable, ATS-friendly?
-5. Keywords Match (0-20): Does it contain keywords for the target role?
+SCORING RULES — BE STRICT:
+Factor 1 - Relevant Experience (0-20):
+- No relevant projects/internships = 3-5
+- 1-2 small projects = 6-10
+- Strong projects with impact = 11-15
+- Professional experience + strong projects = 16-20
 
-STEP 2 — Add the 5 scores together. That is your atsScore (0-100).
+Factor 2 - Technical Skills (0-20):
+- Only basic skills (HTML/CSS/JS) = 5-8
+- Intermediate skills (React/Node) = 9-13
+- Advanced skills (System Design/DSA/Cloud) = 14-17
+- Expert level with breadth = 18-20
 
-STRICT RULES:
-- Score each factor independently and honestly
-- Missing quantifiable achievements = max 8/20 on factor 3
-- Vague skills like "MS Office", "teamwork" = max 10/20 on factor 2
-- No relevant experience = max 5/20 on factor 1
-- Do NOT normalize or round up the final score
+Factor 3 - Achievements & Metrics (0-20):
+- No numbers/metrics at all = 0-4
+- Some vague achievements = 5-9
+- Few quantified results = 10-14
+- Strong quantified impact = 15-20
 
-Respond ONLY with a valid JSON object, no markdown, no backticks:
+Factor 4 - Resume Formatting (0-20):
+- Poor structure/hard to read = 0-7
+- Decent structure = 8-12
+- Clean ATS-friendly format = 13-16
+- Professional clean format = 17-20
+
+Factor 5 - Keywords Match (0-20):
+- Less than 30% keywords matched = 0-6
+- 30-50% matched = 7-11
+- 50-70% matched = 12-15
+- 70%+ matched = 16-20
+
+IMPORTANT:
+- A fresh graduate with only college projects should score 35-55 max
+- Only score above 75 if there is real work experience with metrics
+- Be realistic — most students score between 40-65
+
+Respond ONLY in this exact JSON format, no markdown:
 {
-  "atsScore": <sum of 5 factors>,
+  "atsScore": <total of 5 factors>,
   "scoreBreakdown": {
     "relevantExperience": <0-20>,
     "technicalSkills": <0-20>,
@@ -43,16 +64,15 @@ Respond ONLY with a valid JSON object, no markdown, no backticks:
     "formattingAndClarity": <0-20>,
     "keywordsMatch": <0-20>
   },
-  "summary": "<2-3 sentence honest summary>",
-  "strengths": ["<real strengths only>"],
-  "missingSkills": ["<critical missing skills for target role>"],
-  "improvements": ["<specific actionable improvements>"],
-  "keywords": ["<important ATS keywords missing>"],
+  "summary": "<3-4 sentence HONEST critical assessment>",
+  "strengths": ["<only genuine strengths>"],
+  "missingSkills": ["<critical skills missing for ${user.targetRole || "Software Engineer"} at ${user.targetCompany || "top tech company"}>"],
+  "improvements": ["<specific actionable improvements with examples>"],
+  "keywords": ["<important ATS keywords missing from resume>"],
   "experienceLevel": "<Fresher/Junior/Mid/Senior>",
-  "topSkills": ["<actual skills found>"],
+  "topSkills": ["<skills actually found in resume>"],
   "verdict": "<STRONG PASS / PASS / BORDERLINE / FAIL>"
 }`;
-
     const response = await client.chat.completions.create({
       model: "llama-3.3-70b-versatile", // free, fast, very capable
       max_tokens: 1024,
@@ -95,5 +115,16 @@ const listModels = async (req, res) => {
   ];
   res.json({ models });
 };
+const clearAnalysis = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      resumeAnalysis: null,
+      readinessScore: null,
+    });
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
-module.exports = { analyzeResume, getAnalysis, listModels };
+module.exports = { analyzeResume, getAnalysis, listModels, clearAnalysis };

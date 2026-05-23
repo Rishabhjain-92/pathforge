@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../context/AuthContext"; // ✅ import add karo
 import {
   Upload, FileText, CheckCircle,
   AlertCircle, ExternalLink, TrendingUp,
@@ -8,6 +9,7 @@ import {
 } from "lucide-react";
 
 const Resume = () => {
+  const { refreshUser } = useAuth(); // ✅ component ke andar
   const [resume, setResume] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -23,12 +25,13 @@ const Resume = () => {
     fetchAnalysis();
   }, []);
 
+  const getToken = () => localStorage.getItem("token");
+
   const fetchResume = async () => {
     try {
-      const token = localStorage.getItem("token");
       const res = await axios.get(
         "http://localhost:5000/api/resume",
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${getToken()}` } }
       );
       setResume(res.data.resume);
     } catch (error) {
@@ -38,10 +41,9 @@ const Resume = () => {
 
   const fetchAnalysis = async () => {
     try {
-      const token = localStorage.getItem("token");
       const res = await axios.get(
         "http://localhost:5000/api/ai/analysis",
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${getToken()}` } }
       );
       if (res.data.analysis) setAnalysis(res.data.analysis);
     } catch (error) {
@@ -51,39 +53,50 @@ const Resume = () => {
 
   const handleUpload = async (file) => {
     if (!file) return;
+
     const allowed = [
       "application/pdf",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     ];
+
     if (!allowed.includes(file.type)) {
       setError("Only PDF and DOCX files allowed");
       return;
     }
+
     if (file.size > 5 * 1024 * 1024) {
       setError("File size must be less than 5MB");
       return;
     }
+
     setUploading(true);
     setError("");
+    setSuccess("");
+    setAnalysis(null); // ✅ purana analysis clear karo
+
     try {
-      const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("resume", file);
-      await axios.post(
+
+      const uploadRes = await axios.post(
         "http://localhost:5000/api/resume/upload",
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${getToken()}`,
             "Content-Type": "multipart/form-data",
           },
         }
       );
-      setSuccess("Resume uploaded successfully!");
-      setTimeout(() => setSuccess(""), 3000);
-      fetchResume();
+
+      setSuccess(`Resume uploaded! ${uploadRes.data.totalSkillsFound || 0} skills extracted.`);
+      setTimeout(() => setSuccess(""), 4000);
+
+      fetchResume();          // ✅ resume info refresh
+      await refreshUser();    // ✅ skills + context + localStorage sab update
+
     } catch (err) {
-      setError(err.response?.data?.message || "Upload failed");
+      setError(err.response?.data?.message || "Upload failed. Try again.");
     } finally {
       setUploading(false);
     }
@@ -93,15 +106,15 @@ const Resume = () => {
     setAnalyzing(true);
     setError("");
     try {
-      const token = localStorage.getItem("token");
       const res = await axios.post(
         "http://localhost:5000/api/ai/analyze-resume",
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${getToken()}` } }
       );
       setAnalysis(res.data.analysis);
       setSuccess("AI analysis complete!");
       setTimeout(() => setSuccess(""), 3000);
+      await refreshUser(); // ✅ readinessScore dashboard pe update hoga
     } catch (err) {
       setError(err.response?.data?.message || "Analysis failed");
     } finally {
@@ -144,10 +157,8 @@ const Resume = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px", position: "relative" }}>
 
-      {/* Background glow */}
       <div style={{ position: "fixed", top: "100px", right: "100px", width: "300px", height: "300px", background: "radial-gradient(circle, rgba(249,115,22,0.05) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
 
-      {/* Header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 style={{ color: "white", fontSize: "22px", fontWeight: "700" }}>Resume Analysis</h1>
         <p style={{ color: "#6B7280", fontSize: "14px", marginTop: "4px" }}>
@@ -155,23 +166,25 @@ const Resume = () => {
         </p>
       </motion.div>
 
-      {/* Messages */}
       <AnimatePresence>
         {success && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", color: "#4ADE80", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", color: "#4ADE80", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}
+          >
             <CheckCircle size={16} />{success}
           </motion.div>
         )}
         {error && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#F87171", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#F87171", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}
+          >
             <AlertCircle size={16} />{error}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Upload Area */}
       <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -188,8 +201,13 @@ const Resume = () => {
             transition: "all 0.3s",
           }}
         >
-          <input ref={fileRef} type="file" accept=".pdf,.docx" style={{ display: "none" }}
-            onChange={(e) => handleUpload(e.target.files[0])} />
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".pdf,.docx"
+            style={{ display: "none" }}
+            onChange={(e) => handleUpload(e.target.files[0])}
+          />
 
           {uploading ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
@@ -198,7 +216,7 @@ const Resume = () => {
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 style={{ width: "48px", height: "48px", border: "3px solid rgba(249,115,22,0.3)", borderTop: "3px solid #F97316", borderRadius: "50%" }}
               />
-              <p style={{ color: "#F97316", fontSize: "16px", fontWeight: "600" }}>Uploading...</p>
+              <p style={{ color: "#F97316", fontSize: "16px", fontWeight: "600" }}>Uploading & Extracting Skills...</p>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
@@ -223,7 +241,6 @@ const Resume = () => {
         </div>
       </motion.div>
 
-      {/* Resume Info Cards */}
       <AnimatePresence>
         {resume?.hasResume && (
           <motion.div
@@ -258,7 +275,6 @@ const Resume = () => {
         )}
       </AnimatePresence>
 
-      {/* Analyze Button */}
       {resume?.hasResume && !analysis && (
         <motion.button
           initial={{ opacity: 0, y: 10 }}
@@ -279,15 +295,11 @@ const Resume = () => {
               Analyzing with AI...
             </>
           ) : (
-            <>
-              <Zap size={18} />
-              Analyze Resume with AI
-            </>
+            <><Zap size={18} />Analyze Resume with AI</>
           )}
         </motion.button>
       )}
 
-      {/* AI Analysis Results */}
       <AnimatePresence>
         {analysis && (
           <motion.div
@@ -295,11 +307,7 @@ const Resume = () => {
             animate={{ opacity: 1, y: 0 }}
             style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-
-            {/* Top Row — ATS Score + Verdict + Summary */}
             <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "14px" }}>
-
-              {/* ATS Score Circle */}
               <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
                 <p style={{ color: "#9CA3AF", fontSize: "12px", marginBottom: "16px" }}>ATS Score</p>
                 <div style={{ position: "relative", width: "100px", height: "100px" }}>
@@ -329,19 +337,12 @@ const Resume = () => {
                     <span style={{ color: "#6B7280", fontSize: "11px" }}>/100</span>
                   </div>
                 </div>
-
-                {/* Verdict Badge */}
                 <div style={{ marginTop: "14px", backgroundColor: verdictStyle.bg, border: `1px solid ${verdictStyle.border}`, color: verdictStyle.color, padding: "4px 12px", borderRadius: "999px", fontSize: "11px", fontWeight: "700" }}>
                   {analysis.verdict}
                 </div>
-
-                {/* Experience Level */}
-                <p style={{ color: "#6B7280", fontSize: "12px", marginTop: "8px" }}>
-                  {analysis.experienceLevel}
-                </p>
+                <p style={{ color: "#6B7280", fontSize: "12px", marginTop: "8px" }}>{analysis.experienceLevel}</p>
               </div>
 
-              {/* Summary + Score Breakdown */}
               <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "24px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
                   <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(249,115,22,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -353,7 +354,6 @@ const Resume = () => {
                   {analysis.summary}
                 </p>
 
-                {/* Score Breakdown Toggle */}
                 {analysis.scoreBreakdown && (
                   <div>
                     <button
@@ -363,7 +363,6 @@ const Resume = () => {
                       {showBreakdown ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                       Score Breakdown
                     </button>
-
                     <AnimatePresence>
                       {showBreakdown && (
                         <motion.div
@@ -403,10 +402,7 @@ const Resume = () => {
               </div>
             </div>
 
-            {/* Middle Row — Top Skills + Missing Skills */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-
-              {/* Top Skills */}
               <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
                   <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(74,222,128,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -416,20 +412,14 @@ const Resume = () => {
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {analysis.topSkills?.map((skill, i) => (
-                    <motion.span
-                      key={skill}
-                      initial={{ opacity: 0, scale: 0.7 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.05 }}
-                      style={{ backgroundColor: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.3)", color: "#4ADE80", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "500" }}
-                    >
+                    <motion.span key={skill} initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
+                      style={{ backgroundColor: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.3)", color: "#4ADE80", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "500" }}>
                       {skill}
                     </motion.span>
                   ))}
                 </div>
               </div>
 
-              {/* Missing Skills */}
               <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
                   <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(248,113,113,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -439,13 +429,8 @@ const Resume = () => {
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {analysis.missingSkills?.map((skill, i) => (
-                    <motion.span
-                      key={skill}
-                      initial={{ opacity: 0, scale: 0.7 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.05 }}
-                      style={{ backgroundColor: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", color: "#F87171", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "500" }}
-                    >
+                    <motion.span key={skill} initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
+                      style={{ backgroundColor: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", color: "#F87171", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "500" }}>
                       {skill}
                     </motion.span>
                   ))}
@@ -453,10 +438,7 @@ const Resume = () => {
               </div>
             </div>
 
-            {/* Bottom Row — Strengths + Improvements */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-
-              {/* Strengths */}
               <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
                   <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(96,165,250,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -466,13 +448,8 @@ const Resume = () => {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {analysis.strengths?.map((s, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.08 }}
-                      style={{ display: "flex", alignItems: "flex-start", gap: "10px", backgroundColor: "#1F2937", borderRadius: "10px", padding: "10px 12px" }}
-                    >
+                    <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
+                      style={{ display: "flex", alignItems: "flex-start", gap: "10px", backgroundColor: "#1F2937", borderRadius: "10px", padding: "10px 12px" }}>
                       <div style={{ width: "6px", height: "6px", backgroundColor: "#60A5FA", borderRadius: "50%", marginTop: "6px", flexShrink: 0 }} />
                       <p style={{ color: "#D1D5DB", fontSize: "13px", lineHeight: "1.5" }}>{s}</p>
                     </motion.div>
@@ -480,7 +457,6 @@ const Resume = () => {
                 </div>
               </div>
 
-              {/* Improvements */}
               <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
                   <div style={{ width: "28px", height: "28px", backgroundColor: "rgba(251,191,36,0.1)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -490,13 +466,8 @@ const Resume = () => {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {analysis.improvements?.map((imp, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.08 }}
-                      style={{ display: "flex", alignItems: "flex-start", gap: "10px", backgroundColor: "#1F2937", borderRadius: "10px", padding: "10px 12px" }}
-                    >
+                    <motion.div key={i} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
+                      style={{ display: "flex", alignItems: "flex-start", gap: "10px", backgroundColor: "#1F2937", borderRadius: "10px", padding: "10px 12px" }}>
                       <div style={{ width: "6px", height: "6px", backgroundColor: "#FBBF24", borderRadius: "50%", marginTop: "6px", flexShrink: 0 }} />
                       <p style={{ color: "#D1D5DB", fontSize: "13px", lineHeight: "1.5" }}>{imp}</p>
                     </motion.div>
@@ -505,7 +476,6 @@ const Resume = () => {
               </div>
             </div>
 
-            {/* Keywords */}
             {analysis.keywords?.length > 0 && (
               <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
@@ -516,13 +486,8 @@ const Resume = () => {
                 </div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {analysis.keywords.map((kw, i) => (
-                    <motion.span
-                      key={kw}
-                      initial={{ opacity: 0, scale: 0.7 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.05 }}
-                      style={{ backgroundColor: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.3)", color: "#A78BFA", padding: "5px 12px", borderRadius: "999px", fontSize: "12px" }}
-                    >
+                    <motion.span key={kw} initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}
+                      style={{ backgroundColor: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.3)", color: "#A78BFA", padding: "5px 12px", borderRadius: "999px", fontSize: "12px" }}>
                       {kw}
                     </motion.span>
                   ))}
@@ -530,7 +495,6 @@ const Resume = () => {
               </div>
             )}
 
-            {/* Re-analyze Button */}
             <motion.button
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.97 }}
@@ -549,7 +513,6 @@ const Resume = () => {
         )}
       </AnimatePresence>
 
-      {/* No Resume State */}
       {!resume?.hasResume && !uploading && (
         <motion.div
           initial={{ opacity: 0 }}
