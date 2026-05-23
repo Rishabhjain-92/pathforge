@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "../context/AuthContext"; // ✅ import add karo
+import { useAuth } from "../context/AuthContext";
 import {
   Upload, FileText, CheckCircle,
   AlertCircle, ExternalLink, TrendingUp,
@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 const Resume = () => {
-  const { refreshUser } = useAuth(); // ✅ component ke andar
+  const { refreshUser } = useAuth();
   const [resume, setResume] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -63,7 +63,6 @@ const Resume = () => {
       setError("Only PDF and DOCX files allowed");
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
       setError("File size must be less than 5MB");
       return;
@@ -72,7 +71,7 @@ const Resume = () => {
     setUploading(true);
     setError("");
     setSuccess("");
-    setAnalysis(null); // ✅ purana analysis clear karo
+    setAnalysis(null);
 
     try {
       const formData = new FormData();
@@ -92,8 +91,8 @@ const Resume = () => {
       setSuccess(`Resume uploaded! ${uploadRes.data.totalSkillsFound || 0} skills extracted.`);
       setTimeout(() => setSuccess(""), 4000);
 
-      fetchResume();          // ✅ resume info refresh
-      await refreshUser();    // ✅ skills + context + localStorage sab update
+      fetchResume();
+      await refreshUser();
 
     } catch (err) {
       setError(err.response?.data?.message || "Upload failed. Try again.");
@@ -114,7 +113,7 @@ const Resume = () => {
       setAnalysis(res.data.analysis);
       setSuccess("AI analysis complete!");
       setTimeout(() => setSuccess(""), 3000);
-      await refreshUser(); // ✅ readinessScore dashboard pe update hoga
+      await refreshUser();
     } catch (err) {
       setError(err.response?.data?.message || "Analysis failed");
     } finally {
@@ -168,18 +167,14 @@ const Resume = () => {
 
       <AnimatePresence>
         {success && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", color: "#4ADE80", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}
-          >
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", color: "#4ADE80", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}>
             <CheckCircle size={16} />{success}
           </motion.div>
         )}
         {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#F87171", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}
-          >
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            style={{ display: "flex", alignItems: "center", gap: "10px", backgroundColor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#F87171", padding: "12px 16px", borderRadius: "12px", fontSize: "14px" }}>
             <AlertCircle size={16} />{error}
           </motion.div>
         )}
@@ -191,40 +186,21 @@ const Resume = () => {
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           onClick={() => fileRef.current?.click()}
-          style={{
-            border: `2px dashed ${dragOver ? "#F97316" : "#374151"}`,
-            borderRadius: "20px",
-            padding: "40px 24px",
-            textAlign: "center",
-            cursor: "pointer",
-            backgroundColor: dragOver ? "rgba(249,115,22,0.05)" : "#111827",
-            transition: "all 0.3s",
-          }}
+          style={{ border: `2px dashed ${dragOver ? "#F97316" : "#374151"}`, borderRadius: "20px", padding: "40px 24px", textAlign: "center", cursor: "pointer", backgroundColor: dragOver ? "rgba(249,115,22,0.05)" : "#111827", transition: "all 0.3s" }}
         >
-          <input
-            ref={fileRef}
-            type="file"
-            accept=".pdf,.docx"
-            style={{ display: "none" }}
-            onChange={(e) => handleUpload(e.target.files[0])}
-          />
+          <input ref={fileRef} type="file" accept=".pdf,.docx" style={{ display: "none" }}
+            onChange={(e) => handleUpload(e.target.files[0])} />
 
           {uploading ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                style={{ width: "48px", height: "48px", border: "3px solid rgba(249,115,22,0.3)", borderTop: "3px solid #F97316", borderRadius: "50%" }}
-              />
+              <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                style={{ width: "48px", height: "48px", border: "3px solid rgba(249,115,22,0.3)", borderTop: "3px solid #F97316", borderRadius: "50%" }} />
               <p style={{ color: "#F97316", fontSize: "16px", fontWeight: "600" }}>Uploading & Extracting Skills...</p>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                style={{ width: "60px", height: "60px", backgroundColor: "rgba(249,115,22,0.1)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}
-              >
+              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 2, repeat: Infinity }}
+                style={{ width: "60px", height: "60px", backgroundColor: "rgba(249,115,22,0.1)", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Upload size={26} color="#F97316" />
               </motion.div>
               <div>
@@ -243,23 +219,15 @@ const Resume = () => {
 
       <AnimatePresence>
         {resume?.hasResume && (
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "14px" }}
-          >
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "14px" }}>
             {[
               { icon: FileText, label: "Resume File", value: resume.fileName, color: "#F97316", bg: "rgba(249,115,22,0.1)" },
               { icon: CheckCircle, label: "Uploaded On", value: formatDate(resume.uploadedAt), color: "#60A5FA", bg: "rgba(96,165,250,0.1)" },
               { icon: ExternalLink, label: "View Resume", value: "Open File →", color: "#4ADE80", bg: "rgba(74,222,128,0.1)", onClick: () => window.open(resume.url, "_blank") },
             ].map((card) => (
-              <motion.div
-                key={card.label}
-                whileHover={{ scale: 1.02, y: -2 }}
-                onClick={card.onClick}
-                style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "16px", padding: "18px", display: "flex", alignItems: "center", gap: "14px", cursor: card.onClick ? "pointer" : "default" }}
-              >
+              <motion.div key={card.label} whileHover={{ scale: 1.02, y: -2 }} onClick={card.onClick}
+                style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "16px", padding: "18px", display: "flex", alignItems: "center", gap: "14px", cursor: card.onClick ? "pointer" : "default" }}>
                 <div style={{ width: "44px", height: "44px", backgroundColor: card.bg, borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <card.icon size={20} color={card.color} />
                 </div>
@@ -276,62 +244,40 @@ const Resume = () => {
       </AnimatePresence>
 
       {resume?.hasResume && !analysis && (
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={handleAnalyze}
-          disabled={analyzing}
-          style={{ width: "100%", background: "linear-gradient(135deg, #F97316, #EA580C)", color: "white", padding: "14px", borderRadius: "14px", border: "none", fontSize: "15px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 4px 20px rgba(249,115,22,0.3)" }}
-        >
+        <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
+          onClick={handleAnalyze} disabled={analyzing}
+          style={{ width: "100%", background: "linear-gradient(135deg, #F97316, #EA580C)", color: "white", padding: "14px", borderRadius: "14px", border: "none", fontSize: "15px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 4px 20px rgba(249,115,22,0.3)" }}>
           {analyzing ? (
             <>
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid white", borderRadius: "50%" }}
-              />
+              <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid white", borderRadius: "50%" }} />
               Analyzing with AI...
             </>
-          ) : (
-            <><Zap size={18} />Analyze Resume with AI</>
-          )}
+          ) : <><Zap size={18} />Analyze Resume with AI</>}
         </motion.button>
       )}
 
       <AnimatePresence>
         {analysis && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+
             <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "14px" }}>
               <div style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "20px", padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
                 <p style={{ color: "#9CA3AF", fontSize: "12px", marginBottom: "16px" }}>ATS Score</p>
                 <div style={{ position: "relative", width: "100px", height: "100px" }}>
                   <svg width="100" height="100" style={{ transform: "rotate(-90deg)" }}>
                     <circle cx="50" cy="50" r="36" fill="none" stroke="#1F2937" strokeWidth="8" />
-                    <motion.circle
-                      cx="50" cy="50" r="36"
-                      fill="none"
-                      stroke={scoreColor}
-                      strokeWidth="8"
-                      strokeLinecap="round"
+                    <motion.circle cx="50" cy="50" r="36" fill="none" stroke={scoreColor} strokeWidth="8" strokeLinecap="round"
                       strokeDasharray={circumference}
                       initial={{ strokeDashoffset: circumference }}
                       animate={{ strokeDashoffset: circumference - (analysis.atsScore / 100) * circumference }}
-                      transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
-                    />
+                      transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }} />
                   </svg>
                   <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                      style={{ color: scoreColor, fontSize: "22px", fontWeight: "800", lineHeight: 1 }}
-                    >
+                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+                      style={{ color: scoreColor, fontSize: "22px", fontWeight: "800", lineHeight: 1 }}>
                       {analysis.atsScore}
                     </motion.span>
                     <span style={{ color: "#6B7280", fontSize: "11px" }}>/100</span>
@@ -350,27 +296,19 @@ const Resume = () => {
                   </div>
                   <h3 style={{ color: "white", fontSize: "15px", fontWeight: "600" }}>AI Summary</h3>
                 </div>
-                <p style={{ color: "#D1D5DB", fontSize: "14px", lineHeight: "1.7", marginBottom: "16px" }}>
-                  {analysis.summary}
-                </p>
+                <p style={{ color: "#D1D5DB", fontSize: "14px", lineHeight: "1.7", marginBottom: "16px" }}>{analysis.summary}</p>
 
                 {analysis.scoreBreakdown && (
                   <div>
-                    <button
-                      onClick={() => setShowBreakdown(!showBreakdown)}
-                      style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.2)", color: "#F97316", padding: "6px 14px", borderRadius: "8px", fontSize: "12px", fontWeight: "600", cursor: "pointer" }}
-                    >
+                    <button onClick={() => setShowBreakdown(!showBreakdown)}
+                      style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.2)", color: "#F97316", padding: "6px 14px", borderRadius: "8px", fontSize: "12px", fontWeight: "600", cursor: "pointer" }}>
                       {showBreakdown ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                       Score Breakdown
                     </button>
                     <AnimatePresence>
                       {showBreakdown && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          style={{ overflow: "hidden", marginTop: "12px" }}
-                        >
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                          style={{ overflow: "hidden", marginTop: "12px" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                             {Object.entries(analysis.scoreBreakdown).map(([key, val]) => {
                               const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
@@ -383,12 +321,8 @@ const Resume = () => {
                                     <span style={{ color: col, fontSize: "12px", fontWeight: "600" }}>{val}/20</span>
                                   </div>
                                   <div style={{ width: "100%", height: "5px", backgroundColor: "#1F2937", borderRadius: "999px", overflow: "hidden" }}>
-                                    <motion.div
-                                      initial={{ width: 0 }}
-                                      animate={{ width: `${pct}%` }}
-                                      transition={{ duration: 0.8 }}
-                                      style={{ height: "100%", backgroundColor: col, borderRadius: "999px" }}
-                                    />
+                                    <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8 }}
+                                      style={{ height: "100%", backgroundColor: col, borderRadius: "999px" }} />
                                   </div>
                                 </div>
                               );
@@ -495,13 +429,9 @@ const Resume = () => {
               </div>
             )}
 
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleAnalyze}
-              disabled={analyzing}
-              style={{ width: "100%", backgroundColor: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.3)", color: "#F97316", padding: "12px", borderRadius: "14px", fontSize: "14px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
-            >
+            <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
+              onClick={handleAnalyze} disabled={analyzing}
+              style={{ width: "100%", backgroundColor: "rgba(249,115,22,0.1)", border: "1px solid rgba(249,115,22,0.3)", color: "#F97316", padding: "12px", borderRadius: "14px", fontSize: "14px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
               {analyzing ? (
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   style={{ width: "18px", height: "18px", border: "2px solid rgba(249,115,22,0.3)", borderTop: "2px solid #F97316", borderRadius: "50%" }} />
@@ -514,12 +444,8 @@ const Resume = () => {
       </AnimatePresence>
 
       {!resume?.hasResume && !uploading && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "16px", padding: "32px", textAlign: "center" }}
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+          style={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "16px", padding: "32px", textAlign: "center" }}>
           <div style={{ fontSize: "48px", marginBottom: "12px" }}>📄</div>
           <p style={{ color: "white", fontSize: "16px", fontWeight: "600" }}>No resume uploaded yet</p>
           <p style={{ color: "#6B7280", fontSize: "13px", marginTop: "6px" }}>

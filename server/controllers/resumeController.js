@@ -48,15 +48,18 @@ const uploadResume = async (req, res) => {
     const file = req.file;
     let extractedText = "";
 
- if (file.mimetype === "application/pdf") {
-  const pdfData = await pdfParse(file.buffer);
-  extractedText = pdfData.text;
-} else {
-  const result = await mammoth.extractRawText({ buffer: file.buffer });
-  extractedText = result.value;
-}
+    // Step 1 — Extract text
+    if (file.mimetype === "application/pdf") {
+      const pdfParseModule = require("pdf-parse");
+      const pdfParse = typeof pdfParseModule === "function" ? pdfParseModule : pdfParseModule.default;
+      const pdfData = await pdfParse(file.buffer);
+      extractedText = pdfData.text;
+    } else {
+      const result = await mammoth.extractRawText({ buffer: file.buffer });
+      extractedText = result.value;
+    }
 
-    // Upload to Cloudinary
+    // Step 2 — Upload to Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
@@ -71,20 +74,15 @@ const uploadResume = async (req, res) => {
       ).end(file.buffer);
     });
 
-    // Extract skills from resume
+    // Step 3 — Extract skills
     const extractedSkills = extractSkillsFromText(extractedText);
 
-    // Get existing user skills
+    // Step 4 — Merge with existing skills
     const user = await User.findById(req.user.id);
     const existingSkills = user.skills || [];
+    const mergedSkills = [...new Set([...existingSkills, ...extractedSkills])];
 
-    // Merge skills — no duplicates
-    const mergedSkills = [...new Set([
-      ...existingSkills,
-      ...extractedSkills
-    ])];
-
-    // Update user
+    // Step 5 — Update user in DB
     await User.findByIdAndUpdate(req.user.id, {
       resumeUrl: uploadResult.secure_url,
       resumeText: extractedText,
@@ -93,6 +91,7 @@ const uploadResume = async (req, res) => {
       skills: mergedSkills,
     });
 
+    // Step 6 — Response
     res.status(200).json({
       success: true,
       message: "Resume uploaded successfully",
@@ -104,10 +103,10 @@ const uploadResume = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Upload error:", error); // ← helpful for debugging
     res.status(500).json({ message: "Upload failed", error: error.message });
   }
 };
-
 const getResume = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select(
