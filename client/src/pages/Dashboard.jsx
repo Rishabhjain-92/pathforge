@@ -1,19 +1,60 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import {
   TrendingUp, Target, Building, Calendar,
   CheckCircle, Zap, ArrowRight,
-  BookOpen, Star, Sparkles, Clock,
+  BookOpen, Star, Sparkles, Clock, HelpCircle, Trophy, RefreshCw
 } from "lucide-react";
+import toast from "react-hot-toast";
+
+const QUIZ_QUESTIONS = [
+  {
+    question: "What is the primary benefit of a Bloom Filter in system design?",
+    options: [
+      "Guarantees 100% accurate search results",
+      "Space-efficient probabilistic membership check",
+      "Performs automatic multi-master database replication"
+    ],
+    correctIndex: 1,
+    explanation: "Bloom filters are incredibly memory-efficient but probabilistic: they can tell if an item is 'definitely not' in a set or 'possibly' in a set (false positives are possible, but false negatives are not!)."
+  },
+  {
+    question: "Which HTTP status code represents the famous RFC joke 'I'm a teapot'?",
+    options: [
+      "404 Not Found",
+      "502 Bad Gateway",
+      "418 I'm a teapot"
+    ],
+    correctIndex: 2,
+    explanation: "HTTP 418 was defined in RFC 2324 as an April Fools' Joke in 1998, but it remains a beloved standard easter egg across the internet."
+  },
+  {
+    question: "In caching strategy, what does 'Cache Penetration' refer to?",
+    options: [
+      "Requesting keys that are neither in cache nor database, overloading resources",
+      "Clearing the entire cache structure during deployment",
+      "Preloading hot keys into the cache before active hours"
+    ],
+    correctIndex: 0,
+    explanation: "Cache penetration occurs when requests query keys that never exist. Because they bypass the cache, they hit the primary DB every single time. It is mitigated using Bloom Filters!"
+  }
+];
 
 const Dashboard = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Trivia states
+  const [currentQuizIdx, setCurrentQuizIdx] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [hasAnswered, setHasAnswered] = useState(false);
+  const [streak, setStreak] = useState(3);
+  const [answeredCorrectly, setAnsweredCorrectly] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -40,13 +81,52 @@ const Dashboard = () => {
     return Math.max(1, Math.floor((now - created) / (1000 * 60 * 60 * 24)));
   };
 
+  const handleSelectOption = (idx) => {
+    if (hasAnswered) return;
+    setSelectedOption(idx);
+    setHasAnswered(true);
+    
+    const isCorrect = idx === QUIZ_QUESTIONS[currentQuizIdx].correctIndex;
+    setAnsweredCorrectly(isCorrect);
+    
+    if (isCorrect) {
+      setStreak(prev => prev + 1);
+      toast.success("Correct! Your streak is glowing 🔥", {
+        style: {
+          borderRadius: "16px",
+          background: "rgba(17, 24, 39, 0.9)",
+          color: "#fff",
+          backdropFilter: "blur(8px)",
+          border: "1px solid rgba(249, 115, 22, 0.2)"
+        }
+      });
+    } else {
+      toast.error("Not quite! Study the explanation below.", {
+        style: {
+          borderRadius: "16px",
+          background: "rgba(17, 24, 39, 0.9)",
+          color: "#fff",
+          backdropFilter: "blur(8px)",
+          border: "1px solid rgba(239, 68, 68, 0.2)"
+        }
+      });
+    }
+  };
+
+  const handleNextQuestion = () => {
+    setSelectedOption(null);
+    setHasAnswered(false);
+    setAnsweredCorrectly(false);
+    setCurrentQuizIdx(prev => (prev + 1) % QUIZ_QUESTIONS.length);
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="flex items-center justify-center min-h-[50vh]">
         <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full"
+          transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+          className="w-12 h-12 border-3 border-orange-500/20 border-t-orange-500 rounded-full"
         />
       </div>
     );
@@ -54,235 +134,352 @@ const Dashboard = () => {
 
   const statCards = [
     { label: "Readiness Score", value: `${profile?.readinessScore || 0}%`, icon: TrendingUp, color: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20" },
-    { label: "Target Role", value: profile?.targetRole || "Not set", icon: Target, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
-    { label: "Target Company", value: profile?.targetCompany || "Not set", icon: Building, color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20" },
-    { label: "Days on Platform", value: getDaysOnPlatform(), icon: Calendar, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
+    { label: "Target Role", value: profile?.targetRole || "Not set", icon: Target, color: "text-blue-500 dark:text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+    { label: "Target Company", value: profile?.targetCompany || "Not set", icon: Building, color: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
+    { label: "Days on Platform", value: getDaysOnPlatform(), icon: Calendar, color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
   ];
 
+  const currentQuiz = QUIZ_QUESTIONS[currentQuizIdx];
+
   return (
-    <div className="flex flex-col gap-5">
+    <div className="relative min-h-screen pb-10">
+      
+      {/* 🌅 Sunset Glassmorphic Ambient Background Blobs */}
+      <div className="fixed top-1/4 right-[10%] w-[350px] h-[350px] bg-gradient-to-tr from-orange-500/10 to-rose-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
+      <div className="fixed bottom-1/4 left-[5%] w-[350px] h-[350px] bg-gradient-to-br from-violet-600/10 to-indigo-600/10 rounded-full blur-[100px] pointer-events-none z-0" />
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            {new Date().toLocaleDateString("en-IN", {
-              weekday: "long", day: "numeric",
-              month: "long", year: "numeric"
-            })}
-          </p>
-          <h1 className="text-gray-900 dark:text-white text-2xl font-bold mt-1">
-            Welcome back, <span className="text-orange-500">{user?.name}</span> 👋
-          </h1>
-        </div>
-        <div className="text-sm bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400 px-4 py-2 rounded-xl">
-          {profile?.targetRole || "Set target role"}
-        </div>
-      </div>
+      <div className="relative z-10 flex flex-col gap-6 max-w-7xl mx-auto px-2">
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map((card, i) => (
-          <motion.div
-            key={card.label}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
-            whileHover={{ scale: 1.02 }}
-            className={`bg-white dark:bg-gray-900 border border-gray-200 dark:${card.border} rounded-xl p-5 shadow-sm dark:shadow-none`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">{card.label}</p>
-              <div className={`${card.bg} p-2 rounded-lg`}>
-                <card.icon size={18} className={card.color} />
-              </div>
-            </div>
-            <p className={`${card.color} text-xl font-bold truncate`}>
-              {card.value}
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4">
+          <div>
+            <p className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-widest">
+              {new Date().toLocaleDateString("en-IN", {
+                weekday: "long", day: "numeric",
+                month: "long", year: "numeric"
+              })}
             </p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Middle Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-        {/* Roadmap Progress */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="lg:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 shadow-sm dark:shadow-none"
-        >
-          <div className="flex justify-between items-start mb-5">
-            <div>
-              <h2 className="text-gray-900 dark:text-white text-lg font-semibold">Roadmap Progress</h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Track your Dream Role journey</p>
-            </div>
-            <span className="text-gray-500 dark:text-gray-400 text-sm">{profile?.roadmapProgress || 0}% completed</span>
+            <h1 className="text-gray-900 dark:text-white text-3xl font-extrabold mt-1 tracking-tight">
+              Welcome back, <span className="bg-gradient-to-r from-orange-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">{user?.name}</span> 👋
+            </h1>
           </div>
-
-          <div className="mb-5">
-            <div className="flex justify-between mb-2">
-              <span className="text-gray-500 dark:text-gray-400 text-sm">Overall Completion</span>
-              <span className="text-orange-500 text-sm font-semibold">{profile?.roadmapProgress || 0}%</span>
-            </div>
-            <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${profile?.roadmapProgress || 0}%` }}
-                transition={{ delay: 0.5, duration: 1 }}
-                className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"
-              />
-            </div>
+          <div className="self-start sm:self-center text-xs font-bold bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/20 dark:border-orange-500/30 text-orange-600 dark:text-orange-400 px-4 py-2.5 rounded-2xl backdrop-blur-md">
+            {profile?.targetRole || "Set target role"}
           </div>
+        </div>
 
-          <div className="grid grid-cols-3 gap-3 mb-5">
-            {[
-              { label: "Completed", value: "0", textClass: "text-green-500", bgClass: "bg-green-50 dark:bg-green-500/10" },
-              { label: "In Progress", value: "0", textClass: "text-orange-500", bgClass: "bg-orange-50 dark:bg-orange-500/10" },
-              { label: "Upcoming", value: "0", textClass: "text-gray-500 dark:text-gray-400", bgClass: "bg-gray-50 dark:bg-gray-500/10" },
-            ].map((s) => (
-              <div key={s.label} className={`${s.bgClass} rounded-xl p-4 text-center`}>
-                <p className={`${s.textClass} text-2xl md:text-3xl font-bold`}>{s.value}</p>
-                <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm mt-1">{s.label}</p>
-              </div>
-            ))}
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/roadmap")}
-            className="w-full bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-400 p-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors hover:bg-orange-100 dark:hover:bg-orange-500/20"
-          >
-            <Zap size={16} />
-            Generate Your Roadmap with AI
-            <ArrowRight size={16} />
-          </motion.button>
-        </motion.div>
-
-        {/* AI Insights */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          className="bg-white dark:bg-gray-900 border border-orange-200 dark:border-orange-500/20 rounded-xl p-6 shadow-sm dark:shadow-none"
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles size={18} className="text-orange-500" />
-            <h2 className="text-gray-900 dark:text-white text-lg font-semibold">AI Insights</h2>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            {[
-              "Complete your profile to unlock AI-powered recommendations.",
-              "Upload your resume this week to receive ATS analysis.",
-              "Your profile matches 0% of your target role requirements.",
-            ].map((text, i) => (
-              <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3.5 border border-gray-100 dark:border-transparent">
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{text}</p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Bottom Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-        {/* Recent Activity */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 shadow-sm dark:shadow-none"
-        >
-          <h2 className="text-gray-900 dark:text-white text-lg font-semibold mb-4">Recent Activity</h2>
-          <div className="flex flex-col gap-3">
-            {[
-              { icon: CheckCircle, text: "Profile updated", time: "Just now", colorClass: "text-green-500" },
-              { icon: Star, text: "Skills added to profile", time: "Today", colorClass: "text-orange-500" },
-              { icon: BookOpen, text: "Joined PathForge", time: `${getDaysOnPlatform()} day(s) ago`, colorClass: "text-blue-500" },
-              { icon: Clock, text: "Resume not uploaded yet", time: "Pending", colorClass: "text-gray-500" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-xl p-3.5 border border-gray-100 dark:border-transparent">
-                <item.icon size={18} className={`${item.colorClass} flex-shrink-0`} />
-                <div>
-                  <p className="text-gray-900 dark:text-white text-sm font-medium">{item.text}</p>
-                  <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">{item.time}</p>
+        {/* Premium Stat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {statCards.map((card, i) => (
+            <motion.div
+              key={card.label}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06 }}
+              whileHover={{ y: -4, scale: 1.01 }}
+              className="group bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border border-white/20 dark:border-gray-800/80 rounded-2xl p-5 shadow-lg shadow-gray-200/5 dark:shadow-none hover:border-orange-500/30 dark:hover:border-orange-500/40 transition-all duration-300"
+            >
+              <div className="flex items-center justify-between mb-3.5">
+                <span className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-wider">{card.label}</span>
+                <div className={`${card.bg} p-2.5 rounded-xl transition-transform duration-300 group-hover:scale-105`}>
+                  <card.icon size={16} className={card.color} />
                 </div>
               </div>
-            ))}
-          </div>
-        </motion.div>
+              <p className="text-gray-900 dark:text-white text-2xl font-black tracking-tight truncate">
+                {card.value}
+              </p>
+            </motion.div>
+          ))}
+        </div>
 
-        {/* Next Steps */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6 shadow-sm dark:shadow-none flex flex-col"
-        >
-          <h2 className="text-gray-900 dark:text-white text-lg font-semibold mb-4">Recommended Next Steps</h2>
-          <div className="flex flex-col gap-2 mb-4 flex-grow">
-            {[
-              { text: "Complete System Design Course", path: "/recommendations" },
-              { text: "Upload resume for AI analysis", path: "/resume" },
-              { text: "Generate Dream Role Roadmap", path: "/roadmap" },
-              { text: "Apply to internships", path: "/recommendations" },
-            ].map((step, i) => (
-              <div
-                key={i}
-                onClick={() => navigate(step.path)}
-                className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl p-3.5 cursor-pointer transition-colors border border-gray-100 dark:border-transparent"
-              >
-                <input type="checkbox" className="accent-orange-500 w-4 h-4 cursor-pointer" onClick={(e) => e.stopPropagation()} />
-                <p className="text-gray-700 dark:text-gray-300 text-sm">{step.text}</p>
-              </div>
-            ))}
-          </div>
+        {/* Middle Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/roadmap")}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-colors mt-auto shadow-md shadow-orange-500/20"
+          {/* Roadmap Progress Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-2 bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border border-white/20 dark:border-gray-800/80 rounded-2xl p-6 shadow-lg shadow-gray-200/5 dark:shadow-none flex flex-col justify-between"
           >
-            View Full Roadmap
-            <ArrowRight size={16} />
-          </motion.button>
-        </motion.div>
-      </div>
+            <div>
+              <div className="flex justify-between items-start mb-5">
+                <div>
+                  <h2 className="text-gray-900 dark:text-white text-lg font-bold tracking-tight">Roadmap Progress</h2>
+                  <p className="text-gray-400 dark:text-gray-500 text-xs mt-0.5">Track your Dream Role journey</p>
+                </div>
+                <span className="text-xs font-extrabold bg-orange-500/10 text-orange-500 px-3.5 py-1.5 rounded-full">{profile?.roadmapProgress || 0}% Completed</span>
+              </div>
 
-      {/* Skills */}
-      {profile?.skills?.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 shadow-sm dark:shadow-none"
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-gray-900 dark:text-white text-base font-semibold">Your Skills</h2>
-            <button onClick={() => navigate("/profile")} className="text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 text-sm font-medium transition-colors">Edit →</button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {profile.skills.map((skill, i) => (
-              <motion.span
-                key={skill}
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 + i * 0.03 }}
-                className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 text-orange-600 dark:text-orange-400 px-3 py-1 rounded-full text-xs font-medium"
+              {/* Glowing Horizontal Progress Track */}
+              <div className="mb-6">
+                <div className="flex justify-between mb-2 text-xs font-bold text-gray-500 dark:text-gray-400">
+                  <span>Overall Completion</span>
+                  <span className="text-orange-500 font-extrabold">{profile?.roadmapProgress || 0}%</span>
+                </div>
+                <div className="w-full h-2.5 bg-gray-150 dark:bg-gray-800/50 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${profile?.roadmapProgress || 0}%` }}
+                    transition={{ delay: 0.4, duration: 1 }}
+                    className="h-full bg-gradient-to-r from-orange-500 via-rose-500 to-orange-400 rounded-full"
+                  />
+                </div>
+              </div>
+
+              {/* Split Stats Breakdown */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                {[
+                  { label: "Completed", value: "0", textClass: "text-emerald-500", bgClass: "bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/10" },
+                  { label: "In Progress", value: "0", textClass: "text-orange-500", bgClass: "bg-orange-500/5 dark:bg-orange-500/10 border-orange-500/10" },
+                  { label: "Upcoming", value: "0", textClass: "text-gray-500 dark:text-gray-400", bgClass: "bg-gray-100/5 dark:bg-gray-800/40 border-gray-200/20 dark:border-transparent" },
+                ].map((s) => (
+                  <div key={s.label} className={`${s.bgClass} border rounded-2xl p-4 text-center hover:scale-[1.02] transition-transform duration-300`}>
+                    <p className={`${s.textClass} text-2xl md:text-3xl font-extrabold tracking-tight`}>{s.value}</p>
+                    <p className="text-gray-400 dark:text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mt-1">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <motion.button
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate("/roadmap")}
+              className="w-full bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/25 dark:border-orange-500/30 text-orange-600 dark:text-orange-400 p-3.5 rounded-2xl text-xs md:text-sm font-bold flex items-center justify-center gap-2 hover:bg-orange-500/10 dark:hover:bg-orange-500/20 transition-all"
+            >
+              <Zap size={14} className="fill-orange-500/10 animate-pulse" />
+              Generate Your Roadmap with AI
+              <ArrowRight size={14} />
+            </motion.button>
+          </motion.div>
+
+          {/* AI Insights Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border border-orange-500/20 dark:border-orange-500/30 rounded-2xl p-6 shadow-lg shadow-gray-200/5 dark:shadow-none flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles size={16} className="text-orange-500 animate-pulse" />
+                <h2 className="text-gray-900 dark:text-white text-base font-bold tracking-tight">AI Insights</h2>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                {[
+                  "Complete your profile to unlock AI-powered recommendations.",
+                  "Upload your resume this week to receive ATS analysis.",
+                  "Your profile matches 0% of your target role requirements.",
+                ].map((text, i) => (
+                  <div key={i} className="bg-orange-500/5 dark:bg-orange-500/5 rounded-2xl p-3.5 border border-orange-500/10 dark:border-orange-500/10 hover:bg-orange-500/10 dark:hover:bg-orange-500/8 transition-colors duration-300">
+                    <p className="text-gray-650 dark:text-gray-300 text-xs md:text-sm leading-relaxed font-semibold">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Bottom Row - Responsive 3 Columns Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+          {/* Recent Activity Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border border-white/20 dark:border-gray-800/80 rounded-2xl p-6 shadow-lg shadow-gray-200/5 dark:shadow-none flex flex-col justify-between"
+          >
+            <div>
+              <h2 className="text-gray-900 dark:text-white text-base font-bold tracking-tight mb-4">Recent Activity</h2>
+              <div className="flex flex-col gap-3">
+                {[
+                  { icon: CheckCircle, text: "Profile updated", time: "Just now", colorClass: "text-emerald-500", bgClass: "bg-emerald-500/10" },
+                  { icon: Star, text: "Skills added to profile", time: "Today", colorClass: "text-orange-500", bgClass: "bg-orange-500/10" },
+                  { icon: BookOpen, text: "Joined PathForge", time: `${getDaysOnPlatform()} day(s) ago`, colorClass: "text-blue-500", bgClass: "bg-blue-500/10" },
+                  { icon: Clock, text: "Resume not uploaded yet", time: "Pending", colorClass: "text-gray-400", bgClass: "bg-gray-100 dark:bg-gray-800" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 bg-gray-150/20 dark:bg-gray-800/30 border border-gray-200/10 dark:border-gray-800/50 rounded-2xl p-3.5 hover:bg-gray-150/40 dark:hover:bg-gray-800/50 transition-colors duration-300">
+                    <div className={`${item.bgClass} p-2.5 rounded-xl flex-shrink-0`}>
+                      <item.icon size={15} className={`${item.colorClass}`} />
+                    </div>
+                    <div>
+                      <p className="text-gray-800 dark:text-gray-200 text-xs md:text-sm font-semibold">{item.text}</p>
+                      <p className="text-gray-400 dark:text-gray-500 text-[10px] mt-0.5">{item.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Recommended Next Steps Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border border-white/20 dark:border-gray-800/80 rounded-2xl p-6 shadow-lg shadow-gray-200/5 dark:shadow-none flex flex-col justify-between"
+          >
+            <div>
+              <h2 className="text-gray-900 dark:text-white text-base font-bold tracking-tight mb-4">Recommended Next Steps</h2>
+              <div className="flex flex-col gap-2.5 mb-5">
+                {[
+                  { text: "Complete System Design Course", path: "/recommendations" },
+                  { text: "Upload resume for AI analysis", path: "/resume" },
+                  { text: "Generate Dream Role Roadmap", path: "/roadmap" },
+                  { text: "Apply to internships", path: "/recommendations" },
+                ].map((step, i) => (
+                  <div
+                    key={i}
+                    onClick={() => navigate(step.path)}
+                    className="flex items-center gap-3.5 bg-gray-150/20 dark:bg-gray-850/40 border border-gray-200/10 dark:border-gray-800/40 hover:bg-gray-150/40 dark:hover:bg-gray-850/60 rounded-2xl p-3.5 cursor-pointer transition-all duration-300"
+                  >
+                    <input
+                      type="checkbox"
+                      className="accent-orange-500 w-4 h-4 cursor-pointer rounded-md"
+                      onClick={(e) => e.stopPropagation()}
+                      readOnly
+                      checked={false}
+                    />
+                    <p className="text-gray-700 dark:text-gray-300 text-xs md:text-sm font-semibold">{step.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <motion.button
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate("/roadmap")}
+              className="w-full bg-orange-500 hover:bg-orange-600 active:scale-98 text-white p-3.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-500/20"
+            >
+              View Full Roadmap
+              <ArrowRight size={14} />
+            </motion.button>
+          </motion.div>
+
+          {/* 🧠 Unique Interactive Daily Tech Quest Quiz Widget */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border border-white/20 dark:border-gray-800/80 rounded-2xl p-6 shadow-lg shadow-gray-200/5 dark:shadow-none flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-1.5">
+                  <HelpCircle size={16} className="text-orange-500 animate-pulse" />
+                  <h2 className="text-gray-900 dark:text-white text-base font-bold tracking-tight">Daily Tech Quest</h2>
+                </div>
+                <span className="text-[10px] font-extrabold bg-orange-500/10 text-orange-500 px-2.5 py-1 rounded-full flex items-center gap-1">
+                  🔥 {streak} DAY STREAK
+                </span>
+              </div>
+
+              <p className="text-gray-700 dark:text-gray-200 text-xs md:text-sm font-semibold mb-3 leading-relaxed">
+                {currentQuiz.question}
+              </p>
+
+              <div className="flex flex-col gap-2">
+                {currentQuiz.options.map((option, idx) => {
+                  const isSelected = selectedOption === idx;
+                  const isCorrectOption = idx === currentQuiz.correctIndex;
+                  
+                  let buttonStyle = "border-gray-200/60 dark:border-gray-800 hover:border-orange-500/50 hover:bg-orange-500/5 text-gray-700 dark:text-gray-300";
+                  if (hasAnswered) {
+                    if (isCorrectOption) {
+                      buttonStyle = "border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold";
+                    } else if (isSelected) {
+                      buttonStyle = "border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400";
+                    } else {
+                      buttonStyle = "border-gray-200/20 dark:border-gray-800/20 text-gray-400 opacity-60";
+                    }
+                  }
+
+                  return (
+                    <button
+                      key={idx}
+                      disabled={hasAnswered}
+                      onClick={() => handleSelectOption(idx)}
+                      className={`w-full text-left p-3 rounded-2xl border text-xs font-semibold transition-all duration-300 flex justify-between items-center ${buttonStyle}`}
+                    >
+                      <span>{option}</span>
+                      {hasAnswered && isCorrectOption && <Trophy size={12} className="text-emerald-500 flex-shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Quiz explanation */}
+              <AnimatePresence>
+                {hasAnswered && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-3.5 p-3.5 bg-gray-50/60 dark:bg-gray-800/40 border border-gray-150/40 dark:border-gray-800/80 rounded-2xl overflow-hidden"
+                  >
+                    <p className="text-[9px] font-extrabold uppercase text-gray-400 dark:text-gray-500 tracking-wider">Explanation</p>
+                    <p className="text-gray-500 dark:text-gray-450 text-[11px] leading-relaxed mt-1">
+                      {currentQuiz.explanation}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {hasAnswered && (
+              <motion.button
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={handleNextQuestion}
+                className="w-full mt-4 bg-orange-500/5 dark:bg-orange-500/10 hover:bg-orange-500/10 hover:text-orange-500 text-gray-700 dark:text-gray-300 font-bold p-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition-all"
               >
-                {skill}
-              </motion.span>
-            ))}
-          </div>
-        </motion.div>
-      )}
+                <RefreshCw size={12} /> Next Question
+              </motion.button>
+            )}
+          </motion.div>
+        </div>
 
+        {/* Your Skills Showcase Badge Grid */}
+        {profile?.skills?.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+            className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border border-white/20 dark:border-gray-800/80 rounded-2xl p-6 shadow-lg shadow-gray-200/5 dark:shadow-none"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h2 className="text-gray-900 dark:text-white text-base font-bold tracking-tight">Your Skills</h2>
+                <p className="text-gray-400 dark:text-gray-500 text-xs mt-0.5">Active tech stack parsed from profile</p>
+              </div>
+              <button
+                onClick={() => navigate("/profile")}
+                className="text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 text-xs font-bold transition-colors"
+              >
+                Edit Skills →
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2.5">
+              {profile.skills.map((skill, i) => (
+                <motion.span
+                  key={skill}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.02 }}
+                  className="bg-orange-500/5 dark:bg-orange-500/10 border border-orange-500/20 dark:border-orange-500/30 text-orange-600 dark:text-orange-400 px-3.5 py-1.5 rounded-2xl text-xs font-bold hover:bg-orange-500 hover:text-white dark:hover:bg-orange-500 dark:hover:text-white transition-all cursor-default"
+                >
+                  ⚡ {skill}
+                </motion.span>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+      </div>
     </div>
   );
 };
