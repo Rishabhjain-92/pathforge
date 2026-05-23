@@ -2,6 +2,7 @@ const cloudinary = require("../config/cloudinary");
 const pdfParse = require("pdf-parse");
 const mammoth = require("mammoth");
 const User = require("../models/User");
+const { calculateReadinessScore } = require("./skillGapController");
 
 // Common skills to extract from resume
 const SKILL_KEYWORDS = [
@@ -77,10 +78,11 @@ const uploadResume = async (req, res) => {
     // Step 3 — Extract skills
     const extractedSkills = extractSkillsFromText(extractedText);
 
-    // Step 4 — Merge with existing skills
+    // Step 4 — Calculate new readiness score based on fresh skills
     const user = await User.findById(req.user.id);
-    const existingSkills = user.skills || [];
-    const mergedSkills = [...new Set([...existingSkills, ...extractedSkills])];
+    const targetRole = user.targetRole || "Software Engineer";
+    const targetCompany = user.targetCompany || "";
+    const newReadinessScore = calculateReadinessScore(extractedSkills, targetRole, targetCompany);
 
     // Step 5 — Update user in DB
     await User.findByIdAndUpdate(req.user.id, {
@@ -88,7 +90,9 @@ const uploadResume = async (req, res) => {
       resumeText: extractedText,
       resumeFileName: file.originalname,
       resumeUploadedAt: new Date(),
-      skills: mergedSkills,
+      skills: extractedSkills,
+      resumeAnalysis: "",
+      readinessScore: newReadinessScore,
     });
 
     // Step 6 — Response

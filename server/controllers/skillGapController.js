@@ -54,6 +54,30 @@ const companyBonus = {
   "CRED": ["DSA", "Kotlin", "System Design", "Android"],
 };
 
+const calculateReadinessScore = (userSkills, targetRole, targetCompany) => {
+  const roleData = roleRequirements[targetRole] ||
+    roleRequirements["Software Engineer"];
+
+  let requiredSkills = [...roleData.skills];
+
+  // Add company specific skills
+  if (targetCompany && companyBonus[targetCompany]) {
+    companyBonus[targetCompany].forEach(skill => {
+      if (!requiredSkills.includes(skill)) {
+        requiredSkills.push(skill);
+      }
+    });
+  }
+
+  // Calculate matches
+  const userSkillsLower = userSkills.map(s => s.toLowerCase());
+  const matchedSkills = requiredSkills.filter(s =>
+    userSkillsLower.includes(s.toLowerCase())
+  );
+
+  return Math.round((matchedSkills.length / requiredSkills.length) * 100);
+};
+
 const getSkillGap = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -86,9 +110,7 @@ const getSkillGap = async (req, res) => {
       !userSkillsLower.includes(s.toLowerCase())
     );
 
-    const readinessScore = Math.round(
-      (matchedSkills.length / requiredSkills.length) * 100
-    );
+    const readinessScore = calculateReadinessScore(userSkills, targetRole, targetCompany);
 
     // Update readiness score in DB
     await User.findByIdAndUpdate(req.user.id, { readinessScore });
@@ -114,4 +136,4 @@ const getSkillGap = async (req, res) => {
   }
 };
 
-module.exports = { getSkillGap };
+module.exports = { getSkillGap, calculateReadinessScore };
