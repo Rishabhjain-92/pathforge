@@ -69,6 +69,13 @@ const userSchema = new mongoose.Schema(
     roadmapGeneratedAt: {
       type: Date,
     },
+    dailyQuiz: {
+      type: String,
+      default: "",
+    },
+    dailyQuizDate: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

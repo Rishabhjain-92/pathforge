@@ -42,6 +42,11 @@ const Roadmap = () => {
   const [totalTasks, setTotalTasks] = useState(0);
   const [error, setError] = useState("");
 
+  const isOutdated = roadmap && user && (
+    (user.targetRole && !roadmap.title.toLowerCase().includes(user.targetRole.toLowerCase())) ||
+    (user.targetCompany && !roadmap.title.toLowerCase().includes(user.targetCompany.toLowerCase()))
+  );
+
   useEffect(() => {
     fetchRoadmap();
   }, []);
@@ -489,6 +494,8 @@ const Roadmap = () => {
           <motion.button
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.97 }}
+            animate={isOutdated && !generating ? { scale: [1, 1.015, 1], boxShadow: ["0 4px 20px rgba(249,115,22,0.25)", "0 4px 25px rgba(249,115,22,0.6)", "0 4px 20px rgba(249,115,22,0.25)"] } : {}}
+            transition={isOutdated && !generating ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : {}}
             onClick={handleGenerate}
             disabled={generating}
             style={{
@@ -526,6 +533,37 @@ const Roadmap = () => {
           </motion.button>
         </div>
       </motion.div>
+
+      {/* Outdated Warning */}
+      <AnimatePresence>
+        {isOutdated && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            style={{
+              backgroundColor: "rgba(249,115,22,0.08)",
+              border: "1px solid rgba(249,115,22,0.3)",
+              color: "white",
+              padding: "16px 20px",
+              borderRadius: "16px",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "14px",
+              marginBottom: "4px"
+            }}
+          >
+            <AlertTriangle size={24} color="#F97316" style={{ flexShrink: 0, marginTop: "2px" }} />
+            <div>
+              <p style={{ fontWeight: "700", marginBottom: "4px", fontSize: "15px", color: "#F97316" }}>Profile Updated — Regenerate Required</p>
+              <p style={{ color: "#D1D5DB", fontSize: "13px", lineHeight: "1.5" }}>
+                You recently updated your Dream Role or Company. The roadmap below is outdated and still tailored to your previous profile. 
+                <strong> Please click the Generate button above to create a new plan.</strong>
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Roadmap Content */}
       {roadmap && (

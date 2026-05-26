@@ -87,7 +87,7 @@ const AutoInput = ({ label, name, value, onChange, suggestions, placeholder }) =
 
 // ✅ Profile component
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -165,6 +165,7 @@ const Profile = () => {
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      await refreshUser();
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {

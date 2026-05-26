@@ -6,42 +6,9 @@ import { useNavigate } from "react-router-dom";
 import {
   TrendingUp, Target, Building, Calendar,
   CheckCircle, Zap, ArrowRight,
-  BookOpen, Star, Sparkles, Clock, HelpCircle, Trophy, RefreshCw
+  BookOpen, Star, Sparkles, Clock, HelpCircle, Trophy
 } from "lucide-react";
 import toast from "react-hot-toast";
-
-const QUIZ_QUESTIONS = [
-  {
-    question: "What is the primary benefit of a Bloom Filter in system design?",
-    options: [
-      "Guarantees 100% accurate search results",
-      "Space-efficient probabilistic membership check",
-      "Performs automatic multi-master database replication"
-    ],
-    correctIndex: 1,
-    explanation: "Bloom filters are incredibly memory-efficient but probabilistic: they can tell if an item is 'definitely not' in a set or 'possibly' in a set (false positives are possible, but false negatives are not!)."
-  },
-  {
-    question: "Which HTTP status code represents the famous RFC joke 'I'm a teapot'?",
-    options: [
-      "404 Not Found",
-      "502 Bad Gateway",
-      "418 I'm a teapot"
-    ],
-    correctIndex: 2,
-    explanation: "HTTP 418 was defined in RFC 2324 as an April Fools' Joke in 1998, but it remains a beloved standard easter egg across the internet."
-  },
-  {
-    question: "In caching strategy, what does 'Cache Penetration' refer to?",
-    options: [
-      "Requesting keys that are neither in cache nor database, overloading resources",
-      "Clearing the entire cache structure during deployment",
-      "Preloading hot keys into the cache before active hours"
-    ],
-    correctIndex: 0,
-    explanation: "Cache penetration occurs when requests query keys that never exist. Because they bypass the cache, they hit the primary DB every single time. It is mitigated using Bloom Filters!"
-  }
-];
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -50,28 +17,40 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   // Trivia states
-  const [currentQuizIdx, setCurrentQuizIdx] = useState(0);
+  const [dailyQuiz, setDailyQuiz] = useState(null);
+  const [quizLoading, setQuizLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
   const [hasAnswered, setHasAnswered] = useState(false);
   const [streak, setStreak] = useState(3);
   const [answeredCorrectly, setAnsweredCorrectly] = useState(false);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileAndQuiz = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(
+        
+        // Fetch Profile
+        const profileRes = await axios.get(
           "http://localhost:5000/api/user/profile",
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setProfile(res.data.user);
+        setProfile(profileRes.data.user);
+        
+        // Fetch Daily Quiz
+        const quizRes = await axios.get(
+          "http://localhost:5000/api/ai/daily-quiz",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setDailyQuiz(quizRes.data.quiz);
+
       } catch (error) {
-        console.error("Failed to fetch profile");
+        console.error("Failed to fetch data", error);
       } finally {
         setLoading(false);
+        setQuizLoading(false);
       }
     };
-    fetchProfile();
+    fetchProfileAndQuiz();
   }, []);
 
   const getDaysOnPlatform = () => {
@@ -82,11 +61,11 @@ const Dashboard = () => {
   };
 
   const handleSelectOption = (idx) => {
-    if (hasAnswered) return;
+    if (hasAnswered || !dailyQuiz) return;
     setSelectedOption(idx);
     setHasAnswered(true);
     
-    const isCorrect = idx === QUIZ_QUESTIONS[currentQuizIdx].correctIndex;
+    const isCorrect = idx === dailyQuiz.correctIndex;
     setAnsweredCorrectly(isCorrect);
     
     if (isCorrect) {
@@ -101,6 +80,7 @@ const Dashboard = () => {
         }
       });
     } else {
+      setStreak(0);
       toast.error("Not quite! Study the explanation below.", {
         style: {
           borderRadius: "16px",
@@ -111,13 +91,6 @@ const Dashboard = () => {
         }
       });
     }
-  };
-
-  const handleNextQuestion = () => {
-    setSelectedOption(null);
-    setHasAnswered(false);
-    setAnsweredCorrectly(false);
-    setCurrentQuizIdx(prev => (prev + 1) % QUIZ_QUESTIONS.length);
   };
 
   if (loading) {
@@ -138,8 +111,6 @@ const Dashboard = () => {
     { label: "Target Company", value: profile?.targetCompany || "Not set", icon: Building, color: "text-emerald-500 dark:text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
     { label: "Days on Platform", value: getDaysOnPlatform(), icon: Calendar, color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
   ];
-
-  const currentQuiz = QUIZ_QUESTIONS[currentQuizIdx];
 
   return (
     <div className="relative min-h-screen pb-10">
@@ -371,75 +342,77 @@ const Dashboard = () => {
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-1.5">
                   <HelpCircle size={16} className="text-orange-500 animate-pulse" />
-                  <h2 className="text-gray-900 dark:text-white text-base font-bold tracking-tight">Daily Tech Quest</h2>
+                  <h2 className="text-gray-900 dark:text-white text-base font-bold tracking-tight">AI Daily Tech Quest</h2>
                 </div>
                 <span className="text-[10px] font-extrabold bg-orange-500/10 text-orange-500 px-2.5 py-1 rounded-full flex items-center gap-1">
                   🔥 {streak} DAY STREAK
                 </span>
               </div>
+              
+              {quizLoading ? (
+                <div className="flex flex-col items-center justify-center py-6 gap-3">
+                   <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                    className="w-8 h-8 border-2 border-orange-500/30 border-t-orange-500 rounded-full" />
+                   <p className="text-xs text-gray-500 dark:text-gray-400 font-medium animate-pulse">AI is generating your daily quest...</p>
+                </div>
+              ) : dailyQuiz ? (
+                <>
+                  <p className="text-gray-700 dark:text-gray-200 text-xs md:text-sm font-semibold mb-3 leading-relaxed">
+                    {dailyQuiz.question}
+                  </p>
 
-              <p className="text-gray-700 dark:text-gray-200 text-xs md:text-sm font-semibold mb-3 leading-relaxed">
-                {currentQuiz.question}
-              </p>
+                  <div className="flex flex-col gap-2">
+                    {dailyQuiz.options.map((option, idx) => {
+                      const isSelected = selectedOption === idx;
+                      const isCorrectOption = idx === dailyQuiz.correctIndex;
+                      
+                      let buttonStyle = "border-gray-200/60 dark:border-gray-800 hover:border-orange-500/50 hover:bg-orange-500/5 text-gray-700 dark:text-gray-300";
+                      if (hasAnswered) {
+                        if (isCorrectOption) {
+                          buttonStyle = "border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold";
+                        } else if (isSelected) {
+                          buttonStyle = "border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400";
+                        } else {
+                          buttonStyle = "border-gray-200/20 dark:border-gray-800/20 text-gray-400 opacity-60";
+                        }
+                      }
 
-              <div className="flex flex-col gap-2">
-                {currentQuiz.options.map((option, idx) => {
-                  const isSelected = selectedOption === idx;
-                  const isCorrectOption = idx === currentQuiz.correctIndex;
-                  
-                  let buttonStyle = "border-gray-200/60 dark:border-gray-800 hover:border-orange-500/50 hover:bg-orange-500/5 text-gray-700 dark:text-gray-300";
-                  if (hasAnswered) {
-                    if (isCorrectOption) {
-                      buttonStyle = "border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold";
-                    } else if (isSelected) {
-                      buttonStyle = "border-rose-500 bg-rose-500/10 text-rose-600 dark:text-rose-400";
-                    } else {
-                      buttonStyle = "border-gray-200/20 dark:border-gray-800/20 text-gray-400 opacity-60";
-                    }
-                  }
+                      return (
+                        <button
+                          key={idx}
+                          disabled={hasAnswered}
+                          onClick={() => handleSelectOption(idx)}
+                          className={`w-full text-left p-3 rounded-2xl border text-xs font-semibold transition-all duration-300 flex justify-between items-center ${buttonStyle}`}
+                        >
+                          <span>{option}</span>
+                          {hasAnswered && isCorrectOption && <Trophy size={12} className="text-emerald-500 flex-shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
 
-                  return (
-                    <button
-                      key={idx}
-                      disabled={hasAnswered}
-                      onClick={() => handleSelectOption(idx)}
-                      className={`w-full text-left p-3 rounded-2xl border text-xs font-semibold transition-all duration-300 flex justify-between items-center ${buttonStyle}`}
-                    >
-                      <span>{option}</span>
-                      {hasAnswered && isCorrectOption && <Trophy size={12} className="text-emerald-500 flex-shrink-0" />}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Quiz explanation */}
-              <AnimatePresence>
-                {hasAnswered && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-3.5 p-3.5 bg-gray-50/60 dark:bg-gray-800/40 border border-gray-150/40 dark:border-gray-800/80 rounded-2xl overflow-hidden"
-                  >
-                    <p className="text-[9px] font-extrabold uppercase text-gray-400 dark:text-gray-500 tracking-wider">Explanation</p>
-                    <p className="text-gray-500 dark:text-gray-450 text-[11px] leading-relaxed mt-1">
-                      {currentQuiz.explanation}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  {/* Quiz explanation */}
+                  <AnimatePresence>
+                    {hasAnswered && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-3.5 p-3.5 bg-gray-50/60 dark:bg-gray-800/40 border border-gray-150/40 dark:border-gray-800/80 rounded-2xl overflow-hidden"
+                      >
+                        <p className="text-[9px] font-extrabold uppercase text-gray-400 dark:text-gray-500 tracking-wider">Explanation</p>
+                        <p className="text-gray-500 dark:text-gray-450 text-[11px] leading-relaxed mt-1">
+                          {dailyQuiz.explanation}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              ) : (
+                <p className="text-xs text-red-500 py-4 text-center">Failed to load daily quest.</p>
+              )}
             </div>
 
-            {hasAnswered && (
-              <motion.button
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                onClick={handleNextQuestion}
-                className="w-full mt-4 bg-orange-500/5 dark:bg-orange-500/10 hover:bg-orange-500/10 hover:text-orange-500 text-gray-700 dark:text-gray-300 font-bold p-3 rounded-2xl text-xs flex items-center justify-center gap-1.5 transition-all"
-              >
-                <RefreshCw size={12} /> Next Question
-              </motion.button>
-            )}
           </motion.div>
         </div>
 

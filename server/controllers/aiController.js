@@ -140,4 +140,88 @@ const listModels = async (req, res) => {
   res.json({ models });
 };
 
-module.exports = { analyzeResume, getAnalysis, listModels };
+const getDailyQuiz = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    
+    // Check if we already generated a quiz today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // start of today
+    
+    if (user.dailyQuiz && user.dailyQuizDate) {
+      const quizDate = new Date(user.dailyQuizDate);
+      quizDate.setHours(0, 0, 0, 0);
+      
+      if (quizDate.getTime() === today.getTime()) {
+        // Return cached quiz
+        return res.status(200).json({ success: true, quiz: JSON.parse(user.dailyQuiz) });
+      }
+    }
+    
+    // Generate new quiz
+    const prompt = `
+Generate ONE challenging multiple-choice technical interview question for a ${user.targetRole || "Software Engineer"}.
+
+RULES:
+- Must have exactly 3 options.
+- Only one correct answer.
+- Explanation must be concise (1-2 sentences) and helpful.
+- Difficulty should be medium to hard.
+
+Respond ONLY in this exact JSON format, no markdown:
+{
+  "question": "<The question text>",
+  "options": ["<option 1>", "<option 2>", "<option 3>"],
+  "correctIndex": <0, 1, or 2>,
+  "explanation": "<Concise explanation>"
+}`;
+
+    const response = await client.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      max_tokens: 1000,
+      messages: [
+        {
+          role: "system",
+          content: "You are a senior technical interviewer. Generate technical quizzes only. Return valid JSON."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+    });
+
+    const text = response.choices[0].message.content;
+    const clean = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    const quizData = JSON.parse(clean);
+    
+    // Validate AI output
+    if (!quizData.question || !Array.isArray(quizData.options) || quizData.options.length !== 3 || typeof quizData.correctIndex !== "number") {
+      throw new Error("Invalid AI generated quiz structure");
+    }
+
+    // Save to user DB
+    await User.findByIdAndUpdate(req.user.id, {
+      dailyQuiz: JSON.stringify(quizData),
+      dailyQuizDate: new Date(),
+    });
+
+    res.status(200).json({ success: true, quiz: quizData });
+
+  } catch (error) {
+    // If AI fails, return a fallback static quiz based on role
+    const fallbackQuiz = {
+      question: "Which of the following data structures provides O(1) time complexity for both search and insert on average?",
+      options: [
+        "Binary Search Tree",
+        "Hash Table",
+        "Min Heap"
+      ],
+      correctIndex: 1,
+      explanation: "A Hash Table provides average O(1) time complexity for search and insertion due to its key-value mapping via a hash function."
+    };
+    res.status(200).json({ success: true, quiz: fallbackQuiz });
+  }
+};
+
+module.exports = { analyzeResume, getAnalysis, listModels, getDailyQuiz };
