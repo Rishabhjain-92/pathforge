@@ -76,6 +76,25 @@ const userSchema = new mongoose.Schema(
     dailyQuizDate: {
       type: Date,
     },
+    recommendations: {
+      type: String,
+      default: "",
+    },
+    recommendationsGeneratedAt: {
+      type: Date,
+    },
+    recommendationsContext: {
+      type: Object,
+      default: null,
+    },
+    settings: {
+      type: Object,
+      default: {
+        theme: "system",
+        notifications: true,
+        emailAlerts: true,
+      }
+    },
   },
   {
     timestamps: true,

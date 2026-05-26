@@ -224,4 +224,136 @@ Respond ONLY in this exact JSON format, no markdown:
   }
 };
 
-module.exports = { analyzeResume, getAnalysis, listModels, getDailyQuiz };
+const generateRecommendations = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    
+    const targetRole = user.targetRole || "Software Engineer";
+    const targetCompany = user.targetCompany || "Top Tech Company";
+    const skills = user.skills?.join(", ") || "None";
+    const readiness = user.readinessScore || 0;
+
+    // Parse resume analysis for missing skills if available
+    let missingSkills = [];
+    if (user.resumeAnalysis) {
+      try {
+        const analysis = JSON.parse(user.resumeAnalysis);
+        missingSkills = analysis.missingSkills || [];
+      } catch (e) {}
+    }
+
+    const prompt = `
+You are a senior career coach at a top tech company. Generate a COMPREHENSIVE and personalized career action plan.
+
+CANDIDATE PROFILE:
+- Target Role: ${targetRole}
+- Target Company: ${targetCompany}
+- Current Skills: ${skills}
+- Readiness Score: ${readiness}/100
+- Missing Skills: ${missingSkills.join(", ") || "Not analyzed yet"}
+
+Generate recommendations in this EXACT JSON format (no extra text, no markdown):
+{
+  "missingSkills": ["<skill 1>", "<skill 2>", "<skill 3>", "<skill 4>", "<skill 5>"],
+  "projects": [
+    {
+      "title": "<project name>",
+      "description": "<what this project does, 1-2 sentences>",
+      "techStack": ["<tech 1>", "<tech 2>", "<tech 3>"],
+      "whyBuild": "<why this project is great for resume, 1 sentence>",
+      "difficulty": "<Beginner|Intermediate|Advanced>",
+      "estimatedTime": "<e.g., 2-3 weeks>"
+    }
+  ],
+  "courses": [
+    {
+      "title": "<course/resource name>",
+      "platform": "<YouTube|Coursera|Udemy|LeetCode|freeCodeCamp|Docs>",
+      "description": "<what you'll learn, 1 sentence>",
+      "skillsCovered": ["<skill 1>", "<skill 2>"],
+      "difficulty": "<Beginner|Intermediate|Advanced>",
+      "estimatedTime": "<e.g., 10 hours>",
+      "link": "<search URL or direct link>"
+    }
+  ],
+  "interviewStrategies": [
+    {
+      "title": "<strategy title>",
+      "description": "<actionable tip, 2-3 sentences>",
+      "category": "<Technical|Behavioral|System Design|Resume>"
+    }
+  ],
+  "focusAreas": ["<area 1>", "<area 2>", "<area 3>"]
+}
+
+RULES:
+- Generate exactly 3 projects that cover the missing skills
+- Generate exactly 4-5 courses from real platforms
+- Generate exactly 3 interview strategies specific to ${targetCompany}
+- Generate exactly 3 focus areas
+- Be specific and actionable, not generic
+- Projects should be portfolio-worthy
+`;
+
+    const response = await client.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      max_tokens: 2500,
+      messages: [
+        {
+          role: "system",
+          content: "You are a senior career coach at Google. You provide extremely specific, actionable career guidance. Return valid JSON only, no markdown."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+    });
+
+    const text = response.choices[0].message.content;
+    const clean = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    const recommendationsData = JSON.parse(clean);
+
+    // Store context for Smart Sync detection
+    const context = {
+      targetRole: user.targetRole || "",
+      targetCompany: user.targetCompany || "",
+      skillsCount: user.skills?.length || 0,
+    };
+
+    await User.findByIdAndUpdate(req.user.id, {
+      recommendations: JSON.stringify(recommendationsData),
+      recommendationsGeneratedAt: new Date(),
+      recommendationsContext: context,
+    });
+
+    res.status(200).json({
+      success: true,
+      recommendations: recommendationsData,
+      context,
+      generatedAt: new Date(),
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Failed to generate recommendations", error: error.message });
+  }
+};
+
+const getRecommendations = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user.recommendations) {
+      return res.status(200).json({ success: true, recommendations: null });
+    }
+    res.status(200).json({
+      success: true,
+      recommendations: JSON.parse(user.recommendations),
+      context: user.recommendationsContext || null,
+      generatedAt: user.recommendationsGeneratedAt || null,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+module.exports = { analyzeResume, getAnalysis, listModels, getDailyQuiz, generateRecommendations, getRecommendations };
