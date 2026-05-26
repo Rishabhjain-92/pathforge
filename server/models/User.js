@@ -62,6 +62,13 @@ const userSchema = new mongoose.Schema(
       type: String,
      default: "",
    },
+   roadmap: {
+  type: String,
+  default: "",
+},
+roadmapGeneratedAt: {
+  type: Date,
+},
     
   },
   {

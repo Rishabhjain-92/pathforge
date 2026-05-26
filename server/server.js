@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
 const aiRoutes = require("./routes/aiRoutes");
 const skillGapRoutes = require("./routes/skillGapRoutes");
+const roadmapRoutes = require("./routes/roadmapRoutes");
 
 dotenv.config();
 
@@ -37,3 +38,6 @@ app.use("/api/resume", resumeRoutes);
 
 app.use("/api/ai", aiRoutes);
 app.use("/api/skill-gap", skillGapRoutes);
+app.use("/api/roadmap", roadmapRoutes);
+
+module.exports = app;
