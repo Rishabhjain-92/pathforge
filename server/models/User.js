@@ -60,16 +60,15 @@ const userSchema = new mongoose.Schema(
     },
     resumeAnalysis: {
       type: String,
-     default: "",
-   },
-   roadmap: {
-  type: String,
-  default: "",
-},
-roadmapGeneratedAt: {
-  type: Date,
-},
-    
+      default: "",
+    },
+    roadmap: {
+      type: String,
+      default: "",
+    },
+    roadmapGeneratedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
