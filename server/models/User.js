@@ -62,6 +62,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    resumeAnalyzedAt: {
+      type: Date,
+    },
     roadmap: {
       type: String,
       default: "",

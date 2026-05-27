@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Settings as SettingsIcon, Bell, Moon, Sun, Shield, 
@@ -7,6 +7,7 @@ import {
   Eye, Globe, Palette, BellRing, Lock, UserCircle
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -31,25 +32,12 @@ const Toggle = ({ enabled, onChange }) => (
 
 const Settings = () => {
   const { user, logout, refreshUser } = useAuth();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
-  const [theme, setTheme] = useState(user?.settings?.theme || localStorage.getItem("theme") || "system");
   const [notifications, setNotifications] = useState(user?.settings?.notifications ?? true);
   const [emailAlerts, setEmailAlerts] = useState(user?.settings?.emailAlerts ?? true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-
-  // Apply theme
-  useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-    if (theme === "system") {
-      const sys = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      root.classList.add(sys);
-    } else {
-      root.classList.add(theme);
-    }
-    localStorage.setItem("theme", theme);
-  }, [theme]);
 
   const handleSave = async () => {
     setSaving(true);

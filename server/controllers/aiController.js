@@ -11,7 +11,6 @@ const analyzeResume = async (req, res) => {
       });
     }
 
-    // Fresh prompt — no history
     const prompt = `
 You are a STRICT ATS system used by Google, Amazon, and top tech companies.
 Analyze ONLY this resume text below. Ignore any previous context.
@@ -80,10 +79,10 @@ Respond ONLY in this exact JSON, no markdown, no extra text:
   "verdict": "<STRONG PASS / PASS / BORDERLINE / FAIL>"
 }`;
 
-    // Fresh conversation — no history
     const response = await client.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       max_tokens: 1024,
+      temperature: 0,
       messages: [
         {
           role: "system",
@@ -100,10 +99,10 @@ Respond ONLY in this exact JSON, no markdown, no extra text:
     const clean = text.replace(/```json/g, "").replace(/```/g, "").trim();
     const analysis = JSON.parse(clean);
 
-    // Save new analysis — overwrite old one
     await User.findByIdAndUpdate(req.user.id, {
       readinessScore: analysis.atsScore,
       resumeAnalysis: JSON.stringify(analysis),
+      resumeAnalyzedAt: new Date(),
     });
 
     res.status(200).json({ success: true, analysis });
@@ -115,6 +114,7 @@ Respond ONLY in this exact JSON, no markdown, no extra text:
     });
   }
 };
+
 
 const getAnalysis = async (req, res) => {
   try {

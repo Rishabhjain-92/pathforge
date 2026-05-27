@@ -185,7 +185,11 @@ const Resume = () => {
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           onClick={() => fileRef.current?.click()}
-          className={`border-2 border-dashed rounded-2xl py-10 px-6 text-center cursor-pointer transition-all ${dragOver ? "border-orange-500 bg-orange-50 dark:bg-orange-500/5" : "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900"} hover:border-orange-500`}
+          className={`group border-2 border-dashed rounded-2xl py-10 px-6 text-center cursor-pointer transition-all duration-300 ${
+            dragOver
+              ? "border-orange-500 bg-orange-50 dark:bg-orange-500/8 scale-[1.01]"
+              : "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-orange-500 hover:bg-orange-50/30 dark:hover:bg-orange-500/5"
+          }`}
         >
           <input ref={fileRef} type="file" accept=".pdf,.docx" className="hidden"
             onChange={(e) => handleUpload(e.target.files[0])} />
@@ -198,16 +202,15 @@ const Resume = () => {
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3">
-              <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 2, repeat: Infinity }}
-                className="w-16 h-16 bg-orange-50 dark:bg-orange-500/10 rounded-2xl flex items-center justify-center">
-                <Upload size={26} className="text-orange-500" />
-              </motion.div>
+              <div className="w-16 h-16 bg-orange-50 dark:bg-orange-500/10 group-hover:bg-orange-500/15 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-orange-500/20">
+                <Upload size={26} className="text-orange-500 transition-transform duration-300 group-hover:-translate-y-0.5" />
+              </div>
               <div>
-                <p className="text-gray-900 dark:text-white text-lg font-semibold">
+                <p className="text-gray-900 dark:text-white text-lg font-semibold group-hover:text-orange-500 transition-colors duration-300">
                   {resume?.hasResume ? "Upload New Resume" : "Drop your resume here"}
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                  or <span className="text-orange-500">click to browse</span>
+                  or <span className="text-orange-500 underline underline-offset-2">click to browse</span>
                 </p>
               </div>
               <p className="text-gray-400 dark:text-gray-500 text-xs">PDF and DOCX • Max 5MB</p>

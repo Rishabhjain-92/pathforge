@@ -31,7 +31,7 @@ const categoryIcon = {
 };
 
 const Roadmap = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -99,6 +99,7 @@ const Roadmap = () => {
       setRoadmap(res.data.roadmap);
       calculateProgress(res.data.roadmap);
       setExpandedMonths(new Set([0]));
+      await refreshUser();
     } catch (err) {
       setError(err.response?.data?.message || "Failed to generate roadmap. Please try again.");
     } finally {
@@ -134,6 +135,8 @@ const Roadmap = () => {
       setProgress(res.data.progress);
       setCompletedTasks(res.data.completedTasks);
       setTotalTasks(res.data.totalTasks);
+      // Sync analytics page — update user context with new roadmapProgress
+      refreshUser();
 
     } catch (err) {
       setError("Failed to update task. Please try again.");
