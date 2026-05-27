@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, User, FileText, Target,
-  Map, Star, BarChart2, Settings, LogOut, Sun, Moon, X
+  Map, Star, BarChart2, Settings, LogOut, Sun, Moon, X, MessageSquare
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
@@ -15,6 +15,7 @@ const navItems = [
   { path: "/skill-gap", icon: Target, label: "Skill Gap" },
   { path: "/roadmap", icon: Map, label: "My Roadmap" },
   { path: "/recommendations", icon: Star, label: "Recommendations" },
+  { path: "/interview", icon: MessageSquare, label: "Mock Interview" },
   { path: "/analytics", icon: BarChart2, label: "Analytics" },
   { path: "/settings", icon: Settings, label: "Settings" },
 ];

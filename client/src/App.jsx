@@ -8,6 +8,7 @@ import Resume from "./pages/Resume";
 import SkillGap from "./pages/SkillGap";
 import Roadmap from "./pages/Roadmap";
 import Recommendations from "./pages/Recommendations";
+import MockInterview from "./pages/MockInterview";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import Landing from "./pages/Landing";
@@ -38,6 +39,7 @@ function App() {
         <Route path="/skill-gap" element={<ProtectedLayout><SkillGap /></ProtectedLayout>} />
         <Route path="/roadmap" element={<ProtectedLayout><Roadmap /></ProtectedLayout>} />
         <Route path="/recommendations" element={<ProtectedLayout><Recommendations /></ProtectedLayout>} />
+        <Route path="/interview" element={<ProtectedLayout><MockInterview /></ProtectedLayout>} />
         <Route path="/analytics" element={<ProtectedLayout><Analytics /></ProtectedLayout>} />
         <Route path="/settings" element={<ProtectedLayout><Settings /></ProtectedLayout>} />
       </Routes>
