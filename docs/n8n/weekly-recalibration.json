@@ -1,0 +1,166 @@
+{
+  "name": "PathForge Weekly Recalibration & Progress Emails",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": "everyWeek",
+        "hour": 23,
+        "minute": 0
+      },
+      "id": "2f69a5a7-96a9-4672-9b24-7f13511eb9cc",
+      "name": "Weekly Trigger (Sunday 11 PM)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "http://server:5000/api/automation/active-users",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headersUi": {
+          "parameter": [
+            {
+              "name": "x-automation-key",
+              "value": "your_secure_automation_api_key_here"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f5979bb8-410a-4286-9051-1498b8c1ef1a",
+      "name": "Get Active Users",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "users",
+        "options": {}
+      },
+      "id": "e2ba822f-d897-4c3e-953e-324c4493e843",
+      "name": "Split Into Individual Users",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        640,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://server:5000/api/automation/recalibrate",
+        "sendHeaders": true,
+        "headersUi": {
+          "parameter": [
+            {
+              "name": "x-automation-key",
+              "value": "your_secure_automation_api_key_here"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "userId",
+              "value": "={{ $json._id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "76495ba3-559d-4c3d-b2a8-12c8230b42f6",
+      "name": "Call AI Recalibrate API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        860,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "no-reply@pathforge.com",
+        "toEmail": "={{ $node[\"Split Into Individual Users\"].json.email }}",
+        "subject": "🚀 Your Weekly PathForge Progress Report & Roadmap Recalibration",
+        "html": "=<h3>Hey {{ $node[\"Split Into Individual Users\"].json.name }}!</h3>\n<p>Here is your weekly AI-powered recalibration report to keep you on track for <strong>{{ $node[\"Split Into Individual Users\"].json.targetRole }}</strong> at <strong>{{ $node[\"Split Into Individual Users\"].json.targetCompany }}</strong>.</p>\n\n<table style=\"border-collapse: collapse; width: 100%; max-width: 400px; margin: 20px 0; border: 1px solid #e0e0e0;\">\n  <tr style=\"background-color: #f7f7f7;\">\n    <th style=\"padding: 10px; border: 1px solid #e0e0e0; text-align: left;\">Metric</th>\n    <th style=\"padding: 10px; border: 1px solid #e0e0e0; text-align: right;\">Status</th>\n  </tr>\n  <tr>\n    <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">Task Completion Rate</td>\n    <td style=\"padding: 10px; border: 1px solid #e0e0e0; text-align: right; font-weight: bold; color: #4caf50;\">{{ $json.completionRate }}%</td>\n  </tr>\n  <tr>\n    <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">New Readiness Score</td>\n    <td style=\"padding: 10px; border: 1px solid #e0e0e0; text-align: right; font-weight: bold; color: #2196f3;\">{{ $json.newReadinessScore }}%</td>\n  </tr>\n</table>\n\n<h4>🤖 Mentor Recalibration Insights:</h4>\n<blockquote style=\"background: #f9f9f9; border-left: 6px solid #ff9800; padding: 15px; margin: 20px 0; font-style: italic;\">\n  \"{{ $json.recalibrationFeedback }}\"\n</blockquote>\n\n<p>Log in to <a href=\"http://localhost\">PathForge Dashboard</a> now to check your updated tasks and kickstart this week's goals!</p>\n<br/>\n<p>Best regards,<br/>The PathForge Team</p>",
+        "options": {}
+      },
+      "id": "e6749aa0-e592-4eb9-bf2f-87a4128f73bb",
+      "name": "Send Progress Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "your_smtp_credentials_id",
+          "name": "Gmail/SMTP Credentials"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Weekly Trigger (Sunday 11 PM)": {
+      "main": [
+        [
+          {
+            "node": "Get Active Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Users": {
+      "main": [
+        [
+          {
+            "node": "Split Into Individual Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Into Individual Users": {
+      "main": [
+        [
+          {
+            "node": "Call AI Recalibrate API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call AI Recalibrate API": {
+      "main": [
+        [
+          {
+            "node": "Send Progress Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionTimeout": 3600
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}

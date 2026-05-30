@@ -11,6 +11,7 @@ const aiRoutes = require("./routes/aiRoutes");
 const skillGapRoutes = require("./routes/skillGapRoutes");
 const roadmapRoutes = require("./routes/roadmapRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
+const automationRoutes = require("./routes/automationRoutes");
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/skill-gap", skillGapRoutes);
 app.use("/api/roadmap", roadmapRoutes);
 app.use("/api/interview", interviewRoutes);
+app.use("/api/automation", automationRoutes);
 
 app.get("/", (req, res) => {
   res.send("PathForge API Running");
