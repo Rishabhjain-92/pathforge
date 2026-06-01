@@ -31,14 +31,14 @@ const Dashboard = () => {
         
         // Fetch Profile
         const profileRes = await axios.get(
-          "http://localhost:5000/api/user/profile",
+          "/api/user/profile",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setProfile(profileRes.data.user);
         
         // Fetch Daily Quiz
         const quizRes = await axios.get(
-          "http://localhost:5000/api/ai/daily-quiz",
+          "/api/ai/daily-quiz",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setDailyQuiz(quizRes.data.quiz);

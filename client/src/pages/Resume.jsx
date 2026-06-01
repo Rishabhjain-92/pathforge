@@ -30,7 +30,7 @@ const Resume = () => {
   const fetchResume = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/resume",
+        "/api/resume",
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
       setResume(res.data.resume);
@@ -42,7 +42,7 @@ const Resume = () => {
   const fetchAnalysis = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/ai/analysis",
+        "/api/ai/analysis",
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
       if (res.data.analysis) setAnalysis(res.data.analysis);
@@ -78,7 +78,7 @@ const Resume = () => {
       formData.append("resume", file);
 
       const uploadRes = await axios.post(
-        "http://localhost:5000/api/resume/upload",
+        "/api/resume/upload",
         formData,
         {
           headers: {
@@ -106,7 +106,7 @@ const Resume = () => {
     setError("");
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/ai/analyze-resume",
+        "/api/ai/analyze-resume",
         {},
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );

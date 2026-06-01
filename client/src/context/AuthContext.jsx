@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem("token");
       if (!token) return;
       const res = await axios.get(
-        "http://localhost:5000/api/user/profile",
+        "/api/user/profile",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const updatedUser = res.data.user;

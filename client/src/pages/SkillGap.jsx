@@ -22,7 +22,7 @@ const SkillGap = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        "http://localhost:5000/api/skill-gap",
+        "/api/skill-gap",
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setData(res.data.data);

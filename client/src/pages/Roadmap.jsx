@@ -56,7 +56,7 @@ const Roadmap = () => {
   const fetchRoadmap = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/roadmap",
+        "/api/roadmap",
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
       if (res.data.roadmap) {
@@ -92,7 +92,7 @@ const Roadmap = () => {
     setError("");
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/roadmap/generate",
+        "/api/roadmap/generate",
         {},
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );
@@ -110,7 +110,7 @@ const Roadmap = () => {
   const handleTaskToggle = async (monthIndex, taskIndex, currentCompleted) => {
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/roadmap/task",
+        "/api/roadmap/task",
         {
           monthIndex,
           taskIndex,

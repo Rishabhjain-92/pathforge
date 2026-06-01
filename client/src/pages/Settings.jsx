@@ -44,7 +44,7 @@ const Settings = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        "http://localhost:5000/api/user/settings",
+        "/api/user/settings",
         { theme, notifications, emailAlerts },
         { headers: { Authorization: `Bearer ${token}` } }
       );

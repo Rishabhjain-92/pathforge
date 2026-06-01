@@ -87,7 +87,7 @@ const MockInterview = () => {
   const fetchHistory = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/interview/history", {
+      const res = await axios.get("/api/interview/history", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setHistory(res.data.history);
@@ -101,7 +101,7 @@ const MockInterview = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:5000/api/interview/start",
+        "/api/interview/start",
         { role, company, difficulty, type: interviewType },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -134,7 +134,7 @@ const MockInterview = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:5000/api/interview/submit",
+        "/api/interview/submit",
         { interviewId, answer },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -150,7 +150,7 @@ const MockInterview = () => {
           else clearInterval(ti);
         }, 1500);
         const feedbackRes = await axios.get(
-          `http://localhost:5000/api/interview/feedback/${interviewId}`,
+          `/api/interview/feedback/${interviewId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         clearInterval(ti);
@@ -175,7 +175,7 @@ const MockInterview = () => {
     setAppState("loading_feedback");
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:5000/api/interview/feedback/${id}`, {
+      const res = await axios.get(`/api/interview/feedback/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setScorecard(res.data.interview);

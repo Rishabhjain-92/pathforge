@@ -357,12 +357,12 @@ const Landing = () => {
       {/* Footer */}
       <footer className="border-t border-gray-200 dark:border-gray-800/60 py-10 px-6 relative z-10 bg-white/50 dark:bg-transparent backdrop-blur-sm">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Logo */}
-               <Link to="/" className="flex items-center gap-2.5">
-                 <img src={logo} alt="PathForge" className="w-8 h-8" />
-                 <span className="text-gray-900 dark:text-white font-bold text-lg">PathForge</span>
-               </Link>
-       
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2.5">
+            <img src={logo} alt="PathForge" className="w-8 h-8" />
+            <span className="text-gray-900 dark:text-white font-bold text-lg">PathForge</span>
+          </Link>
+
           <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
             {["Home", "About", "Contact", "Login"].map((item) => (
               <Link key={item} to={item === "Home" ? "/" : `/${item.toLowerCase()}`} className="hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
