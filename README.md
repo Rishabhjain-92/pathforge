@@ -287,6 +287,3 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-<div align="center">
-  <strong>Built with ❤️ for students who refuse to settle — © 2026 PathForge</strong>
-</div>
