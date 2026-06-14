@@ -15,8 +15,13 @@ const getBaseURL = () => {
     if (hostname === "localhost" || hostname === "127.0.0.1") {
       return "http://localhost:5000";
     }
-    // Dynamically point to port 5000 on the same host (AWS server IP or domain)
-    return `${protocol}//${hostname}:5000`;
+    // Check if the hostname is a raw IP address (e.g. 13.60.6.159)
+    const isIP = /^[0-9.]+$/.test(hostname);
+    if (isIP) {
+      return `${protocol}//${hostname}:5000`;
+    }
+    // If it is a custom domain, Nginx will proxy /api requests on port 80/443
+    return `${protocol}//${hostname}`;
   }
   return "http://localhost:5000";
 };
