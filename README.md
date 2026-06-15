@@ -4,7 +4,7 @@
 <div align="center">
 
 ![PathForge Banner](https://img.shields.io/badge/PathForge-AI%20Career%20Copilot-orange?style=for-the-badge&logo=rocket)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-pathforge--pi.vercel.app-brightgreen?style=for-the-badge&logo=vercel)](https://pathforge-pi.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-pathforge.duckdns.org-brightgreen?style=for-the-badge&logo=amazonaws)](https://pathforge.duckdns.org/)
 [![GitHub](https://img.shields.io/badge/GitHub-Rishabhjain--92-black?style=for-the-badge&logo=github)](https://github.com/Rishabhjain-92/pathforge)
 
 **An AI-powered Career Navigation Platform built for students and job seekers who want a clear, personalized, week-by-week path to their dream role — not just generic advice.**
@@ -15,8 +15,9 @@
 
 ## 🌐 Live Demo
 
-**Frontend (Vercel):** [https://pathforge-pi.vercel.app/](https://pathforge-pi.vercel.app/)  
-**Backend (Render):** Deployed on Render (REST API)
+**🚀 Production (AWS + Docker):** [https://pathforge.duckdns.org/](https://pathforge.duckdns.org/)  
+**Backend API:** Running on the same AWS instance via Docker Compose (`port 5000`)  
+**n8n Automation:** Running on the same AWS instance (`port 5678`)
 
 ---
 
@@ -72,8 +73,9 @@ A backend automation pipeline (via **n8n**) that runs weekly, fetches active use
 |---|---|
 | **Node.js** | Runtime |
 | **Express.js** | REST API Framework |
-| **MongoDB Atlas** | Database |
+| **MongoDB Atlas** | Primary Application Database |
 | **Mongoose** | ODM |
+| **PostgreSQL 16** | n8n Workflow & State Persistence (via Docker) |
 | **JWT** | Authentication |
 | **Cloudinary** | Resume / File Storage |
 | **Gemini AI** | Resume Analysis & Recommendations |
@@ -82,11 +84,19 @@ A backend automation pipeline (via **n8n**) that runs weekly, fetches active use
 | **bcryptjs** | Password Hashing |
 | **Multer** | File Upload Middleware |
 
+### DevOps & Infrastructure
+| Technology | Purpose |
+|---|---|
+| **AWS** | Cloud Hosting (EC2 / compute) |
+| **Docker** | Containerization of all services |
+| **Docker Compose** | Multi-container orchestration |
+| **Nginx** | Reverse proxy & React SPA routing |
+
 ### Deployment
 | Platform | Service |
 |---|---|
-| **Vercel** | Frontend Hosting |
-| **Render** | Backend API Hosting |
+| **AWS** | Full-stack production hosting |
+| **Docker Compose** | Orchestrates 4 containers (client, server, n8n, postgres) |
 | **MongoDB Atlas** | Cloud Database |
 | **Cloudinary** | File Storage CDN |
 
@@ -122,6 +132,8 @@ PathForge/
 │   │   │   ├── AuthContext.jsx     # Global Auth State
 │   │   │   └── ThemeContext.jsx    # Dark / Light Mode
 │   │   └── main.jsx                # Entry Point + Axios baseURL config
+│   ├── Dockerfile                  # Multi-stage build → Nginx:alpine
+│   ├── nginx.conf                  # Nginx config for React Router SPA support
 │   ├── vercel.json                 # SPA Routing Fallback for Vercel
 │   └── vite.config.js
 │
@@ -142,9 +154,14 @@ PathForge/
 │   │   └── automationMiddleware.js # n8n Secret Key Guard
 │   ├── config/
 │   │   └── db.js                   # MongoDB Connection
+│   ├── Dockerfile                  # node:20-alpine production image
 │   └── server.js                   # Express App Entry Point
 │
-└── docker-compose.yml          # Docker setup (optional)
+├── docs/
+│   └── n8n/
+│       └── weekly-recalibration.json  # Exported n8n workflow definition
+│
+└── docker-compose.yml          # Orchestrates 4 containers: client, server, n8n, postgres
 ```
 
 ---
@@ -157,6 +174,8 @@ PathForge/
 - Gemini API Key
 - Groq API Key
 - Cloudinary account
+- Docker & Docker Compose (for containerized setup)
+- AWS account (for production deployment)
 
 ### 1. Clone the Repository
 ```bash
@@ -212,16 +231,56 @@ http://localhost:5173
 
 ## 🌍 Deployment Guide
 
-### Frontend → Vercel
+### 🐳 Docker + AWS (Production — Recommended)
+
+This project is fully containerized and runs as **4 Docker services** via Docker Compose:
+
+| Container | Image | Port |
+|---|---|---|
+| `pathforge_client` | `nginx:alpine` (React SPA) | `8080:80` |
+| `pathforge_server` | `node:20-alpine` (Express API) | `5000:5000` |
+| `pathforge_n8n` | `n8nio/n8n:latest` | `5678:5678` |
+| `pathforge_n8n_db` | `postgres:16-alpine` | Internal only |
+
+**Steps to deploy on AWS:**
+1. SSH into your AWS EC2 instance
+2. Install Docker & Docker Compose
+3. Clone the repository
+4. Create a `.env` file in the root directory with all required secrets:
+```env
+MONGO_URI=your_mongodb_atlas_uri
+JWT_SECRET=your_jwt_secret_key
+GROQ_API_KEY=your_groq_api_key
+GEMINI_API_KEY=your_gemini_api_key
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+AUTOMATION_API_KEY=your_n8n_secret_key
+N8N_DB_USER=n8n
+N8N_DB_PASSWORD=your_secure_db_password
+N8N_DB_NAME=n8n
+```
+5. Start all containers:
+```bash
+docker-compose up -d --build
+```
+6. Access the app at `http://<your-aws-ip>:8080` ✅
+7. Access n8n at `http://<your-aws-ip>:5678` ✅
+
+> **Note:** PostgreSQL is only accessible within the Docker internal network. It is **not** exposed externally, ensuring database security.
+
+---
+
+### Frontend → Vercel (Alternative)
 1. Push to GitHub
 2. Import repo into [vercel.com](https://vercel.com)
 3. Set **Root Directory** to `client`
 4. Set **Build Command** to `npm run build`
 5. Set **Output Directory** to `dist`
-6. Add environment variable: `VITE_API_URL=https://your-render-backend.onrender.com`
+6. Add environment variable: `VITE_API_URL=https://your-backend-url.com`
 7. Deploy ✅
 
-### Backend → Render
+### Backend → Render (Alternative)
 1. Create a new **Web Service** on [render.com](https://render.com)
 2. Connect your GitHub repo
 3. Set **Root Directory** to `server`
