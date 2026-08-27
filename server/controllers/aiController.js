@@ -23,41 +23,41 @@ ${user.resumeText}
 Target Role: ${user.targetRole || "Software Engineer"}
 Target Company: ${user.targetCompany || "Top Tech Company"}
 
-SCORING RULES — BE STRICT:
+SCORING RULES:
 Factor 1 - Relevant Experience (0-20):
-- No relevant projects/internships = 3-5
-- 1-2 small projects = 6-10
-- Strong projects with impact = 11-15
-- Professional experience = 16-20
+- No relevant projects/internships = 5-8
+- 1-2 small projects = 9-12
+- Strong projects with impact = 13-16
+- Professional experience = 17-20
 
 Factor 2 - Technical Skills (0-20):
-- Only basic skills = 5-8
-- Intermediate skills = 9-13
+- Only basic skills = 6-9
+- Intermediate skills = 10-13
 - Advanced skills = 14-17
 - Expert level = 18-20
 
 Factor 3 - Achievements & Metrics (0-20):
-- No numbers/metrics = 0-4
-- Vague achievements = 5-9
-- Few quantified results = 10-14
-- Strong quantified impact = 15-20
+- No numbers/metrics = 2-5
+- Vague achievements = 6-10
+- Few quantified results = 11-15
+- Strong quantified impact = 16-20
 
 Factor 4 - Resume Formatting (0-20):
-- Poor structure = 0-7
-- Decent structure = 8-12
-- Clean ATS-friendly = 13-16
-- Professional format = 17-20
+- Poor structure = 2-8
+- Decent structure = 9-13
+- Clean ATS-friendly = 14-17
+- Professional format = 18-20
 
 Factor 5 - Keywords Match (0-20):
-- Less than 30% = 0-6
-- 30-50% = 7-11
-- 50-70% = 12-15
-- 70%+ = 16-20
+- Less than 30% = 3-7
+- 30-50% = 8-12
+- 50-70% = 13-16
+- 70%+ = 17-20
 
 RULES:
-- Fresh graduate with only projects = max 55
-- Score above 75 only if real work experience with metrics
-- Most students score 40-65
+- Fresh graduate with only projects = max 70
+- Score above 85 only if real work experience with strong metrics
+- Most students score 55-75
 
 Respond ONLY in this exact JSON, no markdown, no extra text:
 {
@@ -80,8 +80,8 @@ Respond ONLY in this exact JSON, no markdown, no extra text:
 }`;
 
     const response = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      max_tokens: 1024,
+      model: "openai/gpt-oss-120b",
+      max_tokens: 2500,
       temperature: 0,
       messages: [
         {
@@ -133,9 +133,9 @@ const getAnalysis = async (req, res) => {
 
 const listModels = async (req, res) => {
   const models = [
-    "llama-3.3-70b-versatile",
-    "llama-3.1-8b-instant",
-    "mixtral-8x7b-32768",
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "qwen/qwen3.6-27b",
   ];
   res.json({ models });
 };
@@ -177,7 +177,7 @@ Respond ONLY in this exact JSON format, no markdown:
 }`;
 
     const response = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 1000,
       messages: [
         {
@@ -296,7 +296,7 @@ RULES:
 `;
 
     const response = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 2500,
       messages: [
         {

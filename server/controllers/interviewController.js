@@ -36,7 +36,7 @@ Respond ONLY in this exact JSON format (no markdown, no extra text, no conversat
 }`;
 
     const response = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 800,
       messages: [
         {
@@ -168,7 +168,7 @@ Respond ONLY in this exact JSON format:
     }
 
     const response = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 1000,
       messages: [
         {
@@ -295,7 +295,7 @@ Respond ONLY in this exact JSON format (no markdown, no other text):
 }`;
 
     const response = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 3000,
       messages: [
         {

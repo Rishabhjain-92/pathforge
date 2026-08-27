@@ -116,7 +116,7 @@ Respond ONLY with a valid JSON object matching this exact format, with no backti
 `;
 
     const response = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
       max_tokens: 4000,
       messages: [
         {
