@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "PathForge",
+    "slug": "pathforge",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "pathforge",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pathforge.app"
+    },
+    "android": {
+      "package": "com.pathforge.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0f172a",
+        "foregroundImage": "./assets/adaptive-icon.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "df5a92a5-62c6-4528-86c2-c59b5f3eb85d"
+      }
+    }
+  }
+}
